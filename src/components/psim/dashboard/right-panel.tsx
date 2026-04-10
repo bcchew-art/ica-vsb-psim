@@ -6,6 +6,7 @@ import { usePsimStore } from "@/stores/psim-store";
 import { AlertBanner } from "@/components/psim/alert-banner";
 import { EquipmentCard } from "@/components/psim/equipment-card";
 import { EmptySelection } from "./empty-selection";
+import { RcpHandoverBanner } from "./rcp-handover-banner";
 import { EfoConfirmDialog } from "./efo-confirm-dialog";
 
 const TRANSIT_DURATION_MS = 1000;
@@ -14,6 +15,7 @@ export function RightPanel() {
   const alerts = usePsimStore((s) => s.alerts);
   const equipment = usePsimStore((s) => s.equipment);
   const selectedId = usePsimStore((s) => s.selectedEquipmentId);
+  const controlMode = usePsimStore((s) => s.controlMode);
   const dismissAlert = usePsimStore((s) => s.dismissAlert);
   const raiseEquipment = usePsimStore((s) => s.raiseEquipment);
   const lowerEquipment = usePsimStore((s) => s.lowerEquipment);
@@ -97,12 +99,14 @@ export function RightPanel() {
           <div className="text-label text-text-secondary uppercase tracking-wider mb-space-2 px-space-1">
             Selected
           </div>
+          <RcpHandoverBanner mode={controlMode} />
           {selected ? (
             <EquipmentCard
               equipment={selected}
               onRaise={handleRaise}
               onLower={handleLower}
               onEfo={handleEfoClick}
+              disabled={controlMode !== "mcp"}
             />
           ) : (
             <EmptySelection />

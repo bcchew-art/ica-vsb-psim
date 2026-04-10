@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { usePsimStore } from "@/stores/psim-store";
 import type { ControlMode } from "@/lib/types";
 
@@ -23,7 +24,14 @@ export function ControlModeSwitcher() {
         {modes.map((mode) => (
           <button
             key={mode}
-            onClick={() => setControlMode(mode)}
+            onClick={() => {
+              setControlMode(mode);
+              if (mode === "mcp") {
+                toast.success("Control mode: MCP — PSIM has active control");
+              } else {
+                toast.info(`Control mode: ${modeLabels[mode]} — local control active, PSIM monitoring`);
+              }
+            }}
             className={cn(
               "px-space-3 py-space-1 rounded-sm text-label font-bold font-mono transition-all duration-fast",
               controlMode === mode
