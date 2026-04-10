@@ -32,7 +32,6 @@ interface NavSection {
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const alertsCount = usePsimStore((s) => s.alerts.length);
-  const equipmentCount = usePsimStore((s) => s.equipment.length);
 
   const sections: NavSection[] = [
     {
@@ -52,13 +51,7 @@ export function Sidebar() {
           badge: alertsCount > 0 ? alertsCount : null,
           badgeColor: "red",
         },
-        {
-          icon: TrafficCone,
-          label: "Equipment",
-          href: "/equipment",
-          badge: equipmentCount,
-          badgeColor: "blue",
-        },
+        { icon: TrafficCone, label: "Equipment", href: "/equipment" },
       ],
     },
     {
@@ -148,14 +141,14 @@ export function Sidebar() {
                       collapsed ? (
                         <span
                           className={cn(
-                            "absolute top-1 right-1 w-2 h-2 rounded-full",
+                            "absolute top-1 right-1 w-1.5 h-1.5 rounded-full",
                             badgeColorClass(item.badgeColor),
                           )}
                         />
                       ) : (
                         <span
                           className={cn(
-                            "min-w-[20px] h-5 px-space-1 rounded-full text-label font-bold flex items-center justify-center",
+                            "min-w-[16px] h-4 px-1 rounded-full text-[10px] font-semibold flex items-center justify-center leading-none",
                             badgeColorClass(item.badgeColor),
                           )}
                         >
