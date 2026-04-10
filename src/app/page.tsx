@@ -1,49 +1,10 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { Button } from "@/components/ui/button";
-import { PsimPreview } from "@/components/psim/psim-preview";
+import { HeroDashboard } from "@/components/psim/dashboard/hero-dashboard";
 
 export default function DashboardPage() {
   return (
     <AppShell>
-      <div className="space-y-space-5">
-        <h1 className="text-h1 text-text-primary">Dashboard</h1>
-        <p className="text-body text-text-secondary">
-          Woodlands Checkpoint — VSB PSIM Controller
-        </p>
-
-        {/* Placeholder cards to verify design tokens */}
-        <div className="grid grid-cols-3 gap-space-4">
-          {[
-            { label: "Rising Steps", count: 12, status: "All Operational", color: "bg-status-open" },
-            { label: "Auto Bollards", count: 24, status: "2 In Transit", color: "bg-status-transit" },
-            { label: "Drop Arm Barriers", count: 8, status: "1 Fault", color: "bg-status-fault" },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="bg-surface-elevated rounded-md border border-border p-space-5 shadow-sm"
-            >
-              <div className="flex items-center justify-between mb-space-3">
-                <h3 className="text-h3 text-text-primary">{item.label}</h3>
-                <span className={`w-3 h-3 rounded-full ${item.color}`} />
-              </div>
-              <p className="text-h2 text-text-primary">{item.count}</p>
-              <p className="text-body-sm text-text-secondary">{item.status}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Button variant test — verify ICA theming */}
-        <div className="flex gap-space-2 flex-wrap">
-          <Button variant="default">Primary Action</Button>
-          <Button variant="destructive">Emergency EFO</Button>
-          <Button variant="secondary">Cancel</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="outline">Outline</Button>
-        </div>
-
-        {/* PSIM Components Preview — client component (contains event handlers) */}
-        <PsimPreview />
-      </div>
+      <HeroDashboard />
     </AppShell>
   );
 }
