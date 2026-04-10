@@ -99,8 +99,8 @@
   --duration-slow: 500ms;
 
   /* Layout sizes */
-  --width-sidebar: 260px;
-  --width-sidebar-collapsed: 64px;
+  --width-sidebar: 220px;
+  --width-sidebar-collapsed: 56px;
   --width-control-panel: 360px;
   --height-header: 64px;
 }
