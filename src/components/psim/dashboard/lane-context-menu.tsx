@@ -14,9 +14,10 @@ import { usePsimStore } from "@/stores/psim-store";
 interface Props {
   laneNumber: number;
   children: React.ReactNode;
+  className?: string;
 }
 
-export function LaneContextMenu({ laneNumber, children }: Props) {
+export function LaneContextMenu({ laneNumber, children, className }: Props) {
   const controlMode = usePsimStore((s) => s.controlMode);
   const isActive = usePsimStore((s) => s.sallyPortLanes.has(laneNumber));
   const activateSallyPort = usePsimStore((s) => s.activateSallyPort);
@@ -39,7 +40,7 @@ export function LaneContextMenu({ laneNumber, children }: Props) {
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger>{children}</ContextMenuTrigger>
+      <ContextMenuTrigger className={className}>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-56">
         {isActive ? (
           <ContextMenuItem
