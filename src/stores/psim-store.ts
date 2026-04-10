@@ -45,11 +45,13 @@ function checkInterlock(
   // Only enforce when sally port is active on this lane
   if (!state.sallyPortLanes.has(equipment.lane)) return null;
 
-  // Interlock only applies to front (positions 0-1) and rear (positions 3-4) groups.
-  // The middle rising step (position 2) is neutral.
-  const isFrontGroup = equipment.position <= 1;
-  const isRearGroup = equipment.position >= 3;
-  if (!isFrontGroup && !isRearGroup) return null;
+  // 3-piece lane model:
+  //   position 0 = DAB (Front — entry gate, Malaysia side)
+  //   position 1 = Bollard (Middle — neutral, not part of interlock)
+  //   position 2 = Rising Step (Rear — exit blocker, Singapore side)
+  const isFront = equipment.position === 0;
+  const isRear = equipment.position === 2;
+  if (!isFront && !isRear) return null; // Bollard (pos 1) is neutral
 
   // Only block "opening" actions — raising to secured is always allowed.
   if (nextStatus !== "open") return null;
@@ -57,15 +59,15 @@ function checkInterlock(
   const laneEquipment = state.equipment.filter(
     (e) => e.lane === equipment.lane && e.checkpoint === equipment.checkpoint,
   );
-  const oppositeGroup = isFrontGroup
-    ? laneEquipment.filter((e) => e.position >= 3)
-    : laneEquipment.filter((e) => e.position <= 1);
+  const oppositeGroup = isFront
+    ? laneEquipment.filter((e) => e.position === 2)
+    : laneEquipment.filter((e) => e.position === 0);
   const oppositeHasOpen = oppositeGroup.some((e) => e.status === "open");
 
   if (oppositeHasOpen) {
-    return isFrontGroup
-      ? "Sally port interlock: rear barriers must be secured before front can open"
-      : "Sally port interlock: front barriers must be secured before rear can open";
+    return isFront
+      ? "Sally port interlock: rising step must be secured before DAB can open"
+      : "Sally port interlock: DAB must be secured before rising step can open";
   }
   return null;
 }

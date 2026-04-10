@@ -12,8 +12,8 @@ interface Props {
  *
  * Positioned absolutely within the lane's road strip (the caller
  * must provide a position: relative parent). The box spans horizontally
- * from just after position 1 to just before position 3 (the middle
- * zone containing the rising step).
+ * from just after the DAB (pos 0) to just before the Rising Step (pos 2),
+ * encompassing the middle bollard (pos 1).
  */
 export function SallyPortOverlay({ laneNumber }: Props) {
   return (
@@ -22,7 +22,7 @@ export function SallyPortOverlay({ laneNumber }: Props) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="absolute left-[28%] right-[28%] -top-1 -bottom-1 border-2 border-dashed border-ica-blue bg-ica-blue/10 rounded-sm pointer-events-none z-20"
+      className="absolute left-[22%] right-[22%] -top-1 -bottom-1 border-2 border-dashed border-ica-blue bg-ica-blue/10 rounded-sm pointer-events-none z-20"
     >
       <motion.div
         initial={{ y: -4, opacity: 0 }}
