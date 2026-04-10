@@ -10,7 +10,13 @@ export type EquipmentType =
   | "traffic-light"
   | "card-reader";
 
-export type ControlMode = "mcp" | "rcp" | "wrcd";
+// 5-layer control per eval criteria 3.2.1:
+//   mcp  = Master Control Panel (COR / PSIM)
+//   rcp  = Remote Control Panel (wired at guard house)
+//   op   = Observation Post (officer at viewing post)
+//   hpu  = VSB Control Unit (Hydraulic Pump Unit / Electrical Control Unit — at the equipment)
+//   wrcd = Wireless Remote Control Device (roaming handheld)
+export type ControlMode = "mcp" | "rcp" | "op" | "hpu" | "wrcd";
 
 export type AlertSeverity = "critical" | "warning" | "info";
 

@@ -3,8 +3,10 @@ import type { ControlMode } from "@/lib/types";
 
 const messages: Record<ControlMode, string> = {
   mcp: "",
-  rcp: "Control handed to RCP — local guard house has active control. PSIM is monitoring only.",
-  wrcd: "Control handed to WRCD — wireless device is actively controlling equipment. PSIM is monitoring only.",
+  rcp: "Control handed to RCP — wired panel at the guard house has active control. PSIM is monitoring only.",
+  op: "Control handed to OP — observation post officer has active control. PSIM is monitoring only.",
+  hpu: "Control handed to HPU — local equipment control unit (hydraulic pump / electrical cabinet) is in direct manual control. PSIM is monitoring only.",
+  wrcd: "Control handed to WRCD — wireless handheld device is actively controlling equipment. PSIM is monitoring only.",
 };
 
 interface Props {

@@ -5,12 +5,23 @@ import { toast } from "sonner";
 import { usePsimStore } from "@/stores/psim-store";
 import type { ControlMode } from "@/lib/types";
 
-const modes: ControlMode[] = ["mcp", "rcp", "wrcd"];
+// All 5 control layers per eval criteria 3.2.1
+const modes: ControlMode[] = ["mcp", "rcp", "op", "hpu", "wrcd"];
 
 const modeLabels: Record<ControlMode, string> = {
   mcp: "MCP",
   rcp: "RCP",
+  op: "OP",
+  hpu: "HPU",
   wrcd: "WRCD",
+};
+
+const modeToastMessages: Record<ControlMode, string> = {
+  mcp: "Control mode: MCP — PSIM has active control (Command Operation Room)",
+  rcp: "Control mode: RCP — wired panel at guard house has control",
+  op: "Control mode: OP — observation post has control",
+  hpu: "Control mode: HPU — local equipment panel has control",
+  wrcd: "Control mode: WRCD — wireless handheld has control",
 };
 
 export function ControlModeSwitcher() {
@@ -27,17 +38,18 @@ export function ControlModeSwitcher() {
             onClick={() => {
               setControlMode(mode);
               if (mode === "mcp") {
-                toast.success("Control mode: MCP — PSIM has active control");
+                toast.success(modeToastMessages[mode]);
               } else {
-                toast.info(`Control mode: ${modeLabels[mode]} — local control active, PSIM monitoring`);
+                toast.info(modeToastMessages[mode]);
               }
             }}
             className={cn(
-              "px-space-3 py-space-1 rounded-sm text-label font-bold font-mono transition-all duration-fast",
+              "px-space-2 py-space-1 rounded-sm text-label font-bold font-mono transition-all duration-fast min-w-[40px]",
               controlMode === mode
                 ? "bg-ica-red text-white shadow-[0_0_8px_rgba(211,40,62,0.6)]"
                 : "text-white/60 hover:text-white",
             )}
+            title={modeToastMessages[mode]}
           >
             {modeLabels[mode]}
           </button>
