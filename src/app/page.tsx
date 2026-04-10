@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   return (
@@ -28,6 +29,14 @@ export default function DashboardPage() {
               <p className="text-body-sm text-text-secondary">{item.status}</p>
             </div>
           ))}
+        </div>
+        {/* Button variant test — verify ICA theming */}
+        <div className="flex gap-space-2 flex-wrap">
+          <Button variant="default">Primary Action</Button>
+          <Button variant="destructive">Emergency EFO</Button>
+          <Button variant="secondary">Cancel</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="outline">Outline</Button>
         </div>
       </div>
     </AppShell>
