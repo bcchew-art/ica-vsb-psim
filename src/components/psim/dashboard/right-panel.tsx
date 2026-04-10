@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { usePsimStore } from "@/stores/psim-store";
 import { AlertBanner } from "@/components/psim/alert-banner";
@@ -78,7 +79,11 @@ export function RightPanel() {
   return (
     <>
       <div className="h-full bg-surface border-l border-border overflow-y-auto p-space-3 space-y-space-4">
-        <div>
+        <motion.div
+          initial={{ x: 24, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="text-label text-text-secondary uppercase tracking-wider mb-space-2 px-space-1">
             Active Alerts · {alerts.length}
           </div>
@@ -88,30 +93,62 @@ export function RightPanel() {
             </div>
           ) : (
             <div className="space-y-space-1">
-              {alerts.map((alert) => (
-                <AlertBanner key={alert.id} alert={alert} onDismiss={dismissAlert} />
-              ))}
+              <AnimatePresence initial={true}>
+                {alerts.map((alert, idx) => (
+                  <motion.div
+                    key={alert.id}
+                    initial={{ x: 24, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 24, opacity: 0 }}
+                    transition={{ delay: 0.2 + idx * 0.08, duration: 0.35, ease: "easeOut" }}
+                  >
+                    <AlertBanner alert={alert} onDismiss={dismissAlert} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           )}
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          initial={{ x: 24, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="text-label text-text-secondary uppercase tracking-wider mb-space-2 px-space-1">
             Selected
           </div>
           <RcpHandoverBanner mode={controlMode} />
-          {selected ? (
-            <EquipmentCard
-              equipment={selected}
-              onRaise={handleRaise}
-              onLower={handleLower}
-              onEfo={handleEfoClick}
-              disabled={controlMode !== "mcp"}
-            />
-          ) : (
-            <EmptySelection />
-          )}
-        </div>
+          <AnimatePresence mode="wait">
+            {selected ? (
+              <motion.div
+                key={selected.id}
+                initial={{ y: 12, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -8, opacity: 0 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                <EquipmentCard
+                  equipment={selected}
+                  onRaise={handleRaise}
+                  onLower={handleLower}
+                  onEfo={handleEfoClick}
+                  disabled={controlMode !== "mcp"}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <EmptySelection />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
 
       <EfoConfirmDialog

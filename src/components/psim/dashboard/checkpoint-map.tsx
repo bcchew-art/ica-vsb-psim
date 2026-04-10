@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 import { usePsimStore } from "@/stores/psim-store";
 import { MapLane } from "./map-lane";
 import type { Equipment } from "@/lib/types";
@@ -43,18 +44,24 @@ export function CheckpointMap() {
   const checkpointName = checkpoint === "woodlands" ? "WOODLANDS" : "TUAS";
 
   return (
-    <div className="h-full bg-gradient-to-b from-surface to-background p-space-5 relative overflow-hidden">
-      <div className="absolute top-space-3 left-space-4 text-body-sm italic font-mono text-text-secondary tracking-wider">
-        ← MALAYSIA · CAUSEWAY
-      </div>
-      <div className="absolute bottom-space-3 right-space-4 text-body-sm italic font-mono text-text-secondary tracking-wider">
-        SINGAPORE →
-      </div>
-      <div className="absolute top-space-3 right-space-4 text-label font-mono text-text-secondary">
-        {checkpointName} CHECKPOINT
-      </div>
+    <div className="h-full bg-gradient-to-b from-surface to-background p-space-5 relative overflow-hidden flex flex-col">
+      {/* Header row — no more overlap */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+        className="flex items-center justify-between mb-space-5"
+      >
+        <div className="text-body-sm italic font-mono text-text-secondary tracking-wider">
+          ← MALAYSIA · CAUSEWAY
+        </div>
+        <div className="text-label font-mono font-bold text-text-primary tracking-widest">
+          {checkpointName} CHECKPOINT
+        </div>
+      </motion.div>
 
-      <div className="mt-space-8 pt-space-3">
+      {/* Lanes */}
+      <div className="flex-1">
         {laneNumbers.map((laneNum) => (
           <MapLane
             key={laneNum}
@@ -63,6 +70,16 @@ export function CheckpointMap() {
           />
         ))}
       </div>
+
+      {/* Footer */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
+        className="text-body-sm italic font-mono text-text-secondary tracking-wider text-right"
+      >
+        SINGAPORE →
+      </motion.div>
     </div>
   );
 }
