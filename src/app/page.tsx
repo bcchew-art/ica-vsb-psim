@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Button } from "@/components/ui/button";
+import { PsimPreview } from "@/components/psim/psim-preview";
 
 export default function DashboardPage() {
   return (
@@ -30,6 +31,7 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+
         {/* Button variant test — verify ICA theming */}
         <div className="flex gap-space-2 flex-wrap">
           <Button variant="default">Primary Action</Button>
@@ -38,6 +40,9 @@ export default function DashboardPage() {
           <Button variant="ghost">Ghost</Button>
           <Button variant="outline">Outline</Button>
         </div>
+
+        {/* PSIM Components Preview — client component (contains event handlers) */}
+        <PsimPreview />
       </div>
     </AppShell>
   );
