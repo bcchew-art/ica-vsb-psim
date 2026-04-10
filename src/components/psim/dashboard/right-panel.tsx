@@ -30,9 +30,12 @@ export function RightPanel() {
 
   const handleRaise = () => {
     if (!selected) return;
-    raiseEquipment(selected.id);
+    const error = raiseEquipment(selected.id);
+    if (error) {
+      toast.error(error);
+      return;
+    }
     toast.info(`${selected.name} raising...`);
-    // After transit delay, flip to secured (only if still in transit)
     setTimeout(() => {
       const current = usePsimStore.getState().equipment.find((e) => e.id === selected.id);
       if (current?.status === "transit") {
@@ -50,7 +53,11 @@ export function RightPanel() {
 
   const handleLower = () => {
     if (!selected) return;
-    lowerEquipment(selected.id);
+    const error = lowerEquipment(selected.id);
+    if (error) {
+      toast.error(error);
+      return;
+    }
     toast.info(`${selected.name} lowering...`);
     setTimeout(() => {
       const current = usePsimStore.getState().equipment.find((e) => e.id === selected.id);
