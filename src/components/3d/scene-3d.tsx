@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { Lighting } from "./lighting";
 import { GroundPlane } from "./ground-plane";
 import { Lane } from "./lane";
+import { Gantry } from "./gantry";
 import { woodlandsLayout } from "@/lib/checkpoint-layout";
 
 export default function Scene3D() {
@@ -21,6 +22,9 @@ export default function Scene3D() {
         <GroundPlane />
         {Array.from({ length: woodlandsLayout.laneCount }, (_, i) => (
           <Lane key={i + 1} layout={woodlandsLayout} laneNumber={i + 1} />
+        ))}
+        {woodlandsLayout.gantries.map((g, i) => (
+          <Gantry key={i} layout={woodlandsLayout} config={g} />
         ))}
       </Canvas>
     </div>
