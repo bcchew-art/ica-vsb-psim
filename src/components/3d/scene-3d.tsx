@@ -3,6 +3,8 @@
 import { Canvas } from "@react-three/fiber";
 import { Lighting } from "./lighting";
 import { GroundPlane } from "./ground-plane";
+import { Lane } from "./lane";
+import { woodlandsLayout } from "@/lib/checkpoint-layout";
 
 export default function Scene3D() {
   return (
@@ -17,10 +19,9 @@ export default function Scene3D() {
         <color attach="background" args={["#050a14"]} />
         <Lighting />
         <GroundPlane />
-        <mesh position={[0, 1.5, 0]} castShadow>
-          <boxGeometry args={[2, 3, 2]} />
-          <meshStandardMaterial color="#e0e0e0" metalness={0.6} roughness={0.35} />
-        </mesh>
+        {Array.from({ length: woodlandsLayout.laneCount }, (_, i) => (
+          <Lane key={i + 1} layout={woodlandsLayout} laneNumber={i + 1} />
+        ))}
       </Canvas>
     </div>
   );
