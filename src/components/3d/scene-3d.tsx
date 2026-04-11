@@ -5,7 +5,25 @@ import { Lighting } from "./lighting";
 import { GroundPlane } from "./ground-plane";
 import { Lane } from "./lane";
 import { Gantry } from "./gantry";
+import { BollardArray } from "./equipment/bollard-array";
 import { woodlandsLayout } from "@/lib/checkpoint-layout";
+import type { Equipment } from "@/lib/types";
+
+const testBollard: Equipment = {
+  id: "test-bol",
+  name: "Test Bollard",
+  type: "auto-bollard",
+  status: "secured",
+  checkpoint: "woodlands",
+  zone: "mid",
+  lane: 3,
+  position: 1,
+  lastAction: "init",
+  lastActionTime: "00:00",
+  controlMode: "mcp",
+  health: { power: true, battery: true },
+  efoActive: false,
+};
 
 export default function Scene3D() {
   return (
@@ -20,9 +38,21 @@ export default function Scene3D() {
         <color attach="background" args={["#050a14"]} />
         <Lighting />
         <GroundPlane />
-        {Array.from({ length: woodlandsLayout.laneCount }, (_, i) => (
-          <Lane key={i + 1} layout={woodlandsLayout} laneNumber={i + 1} />
-        ))}
+        {Array.from({ length: woodlandsLayout.laneCount }, (_, i) => {
+          const laneNum = i + 1;
+          return (
+            <Lane key={laneNum} layout={woodlandsLayout} laneNumber={laneNum}>
+              {laneNum === 3 && (
+                <group position={[0, 0.03, 0]}>
+                  <BollardArray
+                    equipment={testBollard}
+                    laneWidth={woodlandsLayout.laneWidth}
+                  />
+                </group>
+              )}
+            </Lane>
+          );
+        })}
         {woodlandsLayout.gantries.map((g, i) => (
           <Gantry key={i} layout={woodlandsLayout} config={g} />
         ))}
