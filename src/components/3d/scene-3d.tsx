@@ -7,6 +7,7 @@ import { Lane } from "./lane";
 import { Gantry } from "./gantry";
 import { BollardArray } from "./equipment/bollard-array";
 import { DropArmBarrier } from "./equipment/drop-arm-barrier";
+import { RisingStep } from "./equipment/rising-step";
 import { woodlandsLayout } from "@/lib/checkpoint-layout";
 import type { Equipment } from "@/lib/types";
 
@@ -55,6 +56,14 @@ export default function Scene3D() {
                 <group position={[-8, 0.03, 0]}>
                   <DropArmBarrier
                     equipment={{ ...testBollard, id: "test-dab", type: "drop-arm-barrier", position: 0, lane: 2 }}
+                    laneWidth={woodlandsLayout.laneWidth}
+                  />
+                </group>
+              )}
+              {laneNum === 4 && (
+                <group position={[8, 0.03, 0]}>
+                  <RisingStep
+                    equipment={{ ...testBollard, id: "test-step", type: "rising-step", position: 2, lane: 4, status: "secured" }}
                     laneWidth={woodlandsLayout.laneWidth}
                   />
                 </group>
