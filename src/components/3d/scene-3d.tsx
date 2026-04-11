@@ -2,6 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Lighting } from "./lighting";
+import { GroundPlane } from "./ground-plane";
 
 export default function Scene3D() {
   return (
@@ -15,11 +16,7 @@ export default function Scene3D() {
       >
         <color attach="background" args={["#050a14"]} />
         <Lighting />
-        {/* Placeholder: visible ground quad so we can see lighting */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-          <planeGeometry args={[40, 20]} />
-          <meshStandardMaterial color="#0f1826" />
-        </mesh>
+        <GroundPlane />
         <mesh position={[0, 1.5, 0]} castShadow>
           <boxGeometry args={[2, 3, 2]} />
           <meshStandardMaterial color="#e0e0e0" metalness={0.6} roughness={0.35} />
