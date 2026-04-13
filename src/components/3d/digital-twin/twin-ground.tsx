@@ -12,20 +12,22 @@ export function TwinGround() {
 
   return (
     <group>
-      {/* Ambient grid beneath everything */}
+      {/* Circuit-board tech grid — bright and visible */}
       <Grid
-        position={[0, -0.05, 0]}
+        position={[0, 0.02, 0]}
         args={[300, 300]}
-        cellSize={5}
-        cellColor="#1a2a40"
-        sectionSize={25}
-        sectionColor="#1e3050"
-        fadeDistance={200}
-        fadeStrength={1}
-        infiniteGrid
+        cellSize={4}
+        cellThickness={0.6}
+        cellColor={"#0a3050"}
+        sectionSize={20}
+        sectionThickness={1.2}
+        sectionColor={"#0a4a70"}
+        fadeDistance={180}
+        fadeStrength={1.5}
+        infiniteGrid={true}
       />
 
-      {/* Main compound elliptical floor — scaled cylinder */}
+      {/* Main compound elliptical floor — darker so grid shows through */}
       <mesh
         position={[0, 0.01, 0]}
         scale={[100, 1, 70]}
@@ -34,9 +36,22 @@ export function TwinGround() {
       >
         <cylinderGeometry args={groundArgs} />
         <meshStandardMaterial
-          color="#0a1628"
+          color="#030810"
           metalness={0.1}
           roughness={0.9}
+          side={DoubleSide}
+        />
+      </mesh>
+
+      {/* Radial glow at center — large transparent pool of light */}
+      <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[80, 64]} />
+        <meshStandardMaterial
+          color="#0a2040"
+          emissive="#0a2040"
+          emissiveIntensity={0.3}
+          transparent
+          opacity={0.15}
           side={DoubleSide}
         />
       </mesh>

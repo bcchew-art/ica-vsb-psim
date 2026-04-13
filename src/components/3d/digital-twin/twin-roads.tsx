@@ -42,10 +42,12 @@ function CentreDashes({
         return (
           <mesh key={i} position={[wx, 0.03, wz]} rotation={[0, -rotY, 0]}>
             <planeGeometry args={[dashLen, 0.15]} />
-            <meshBasicMaterial
-              color="#2F5FD0"
+            <meshStandardMaterial
+              color="#00ccff"
+              emissive="#00ccff"
+              emissiveIntensity={3.0}
               transparent
-              opacity={0.65}
+              opacity={0.9}
               side={DoubleSide}
             />
           </mesh>
@@ -79,10 +81,12 @@ function EdgeLine({
       rotation={[0, -rotY, 0]}
     >
       <planeGeometry args={[length, 0.18]} />
-      <meshBasicMaterial
-        color="#2F5FD0"
+      <meshStandardMaterial
+        color="#00ccff"
+        emissive="#00ccff"
+        emissiveIntensity={3.0}
         transparent
-        opacity={0.45}
+        opacity={0.9}
         side={DoubleSide}
       />
     </mesh>
@@ -112,7 +116,12 @@ function Curb({
   return (
     <mesh position={[posX + perpX, posY + 0.075, posZ + perpZ]} rotation={[0, -rotY, 0]}>
       <boxGeometry args={[length, 0.15, 0.3]} />
-      <meshStandardMaterial color="#1e2a3a" roughness={0.95} />
+      <meshStandardMaterial
+        color="#1e2a3a"
+        emissive="#0a2040"
+        emissiveIntensity={0.3}
+        roughness={0.95}
+      />
     </mesh>
   );
 }
@@ -143,7 +152,7 @@ function RoadSegment({
       >
         <planeGeometry args={[length, width]} />
         <meshStandardMaterial
-          color="#0f1822"
+          color="#0a1018"
           metalness={0.02}
           roughness={0.95}
           side={DoubleSide}
@@ -204,12 +213,12 @@ export function TwinRoads() {
       {/* High segment: elevated ~5 units */}
       <mesh position={[-105, 5, 35]} rotation={[-Math.PI / 2, 0, -Math.PI / 6]}>
         <planeGeometry args={[30, 10]} />
-        <meshStandardMaterial color="#0f1822" metalness={0.02} roughness={0.95} side={DoubleSide} />
+        <meshStandardMaterial color="#0a1018" metalness={0.02} roughness={0.95} side={DoubleSide} />
       </mesh>
       {/* Ramp segment */}
       <mesh position={[-92, 2.5, 20]} rotation={[-Math.PI / 2 + 0.15, 0, -Math.PI / 5]}>
         <planeGeometry args={[28, 10]} />
-        <meshStandardMaterial color="#0f1822" metalness={0.02} roughness={0.95} side={DoubleSide} />
+        <meshStandardMaterial color="#0a1018" metalness={0.02} roughness={0.95} side={DoubleSide} />
       </mesh>
       {/* Ground connection */}
       <RoadSegment
@@ -221,11 +230,23 @@ export function TwinRoads() {
       {/* Bridge guard rails */}
       <mesh position={[-98, 6.5, 38]}>
         <boxGeometry args={[28, 0.3, 0.3]} />
-        <meshBasicMaterial color="#2F5FD0" transparent opacity={0.6} />
+        <meshStandardMaterial
+          color="#00ccff"
+          emissive="#00ccff"
+          emissiveIntensity={3.0}
+          transparent
+          opacity={0.8}
+        />
       </mesh>
       <mesh position={[-98, 6.5, 32]}>
         <boxGeometry args={[28, 0.3, 0.3]} />
-        <meshBasicMaterial color="#2F5FD0" transparent opacity={0.6} />
+        <meshStandardMaterial
+          color="#00ccff"
+          emissive="#00ccff"
+          emissiveIntensity={3.0}
+          transparent
+          opacity={0.8}
+        />
       </mesh>
     </group>
   );

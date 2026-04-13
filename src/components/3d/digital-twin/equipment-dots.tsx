@@ -78,7 +78,13 @@ function EquipmentDot({
       {/* Vertical stem from ground to orb */}
       <mesh position={[0, 0.75, 0]}>
         <cylinderGeometry args={[0.04, 0.04, 1.5, 5]} />
-        <meshBasicMaterial color={color} transparent opacity={0.45} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={1.0}
+          transparent
+          opacity={0.6}
+        />
       </mesh>
 
       {/* Ground ring */}
@@ -88,7 +94,13 @@ function EquipmentDot({
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <ringGeometry args={[1.0, 1.3, 32]} />
-        <meshBasicMaterial color={color} transparent opacity={0.25} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={3.0}
+          transparent
+          opacity={0.25}
+        />
       </mesh>
 
       {/* Outer pulse ring (selection only) */}
@@ -99,7 +111,13 @@ function EquipmentDot({
         visible={false}
       >
         <ringGeometry args={[1.5, 1.9, 32]} />
-        <meshBasicMaterial color={color} transparent opacity={0.2} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={3.0}
+          transparent
+          opacity={0.2}
+        />
       </mesh>
 
       {/* Glowing orb */}
@@ -114,7 +132,7 @@ function EquipmentDot({
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={3.0}
+          emissiveIntensity={5.0}
           metalness={0.1}
           roughness={0.2}
         />

@@ -14,7 +14,7 @@ import { TwinHud } from "./twin-hud";
 function TwinLighting() {
   return (
     <>
-      <ambientLight color="#1a2a40" intensity={0.35} />
+      <ambientLight color="#1a2a40" intensity={0.4} />
       <directionalLight
         color="#4a6a9a"
         intensity={0.6}
@@ -58,8 +58,8 @@ function SceneContent({
 }) {
   return (
     <>
-      {/* Exponential fog for depth */}
-      <fog attach="fog" args={["#050a15", 80, 250]} />
+      {/* Exponential fog for depth — tighter for more atmosphere */}
+      <fog attach="fog" args={["#050a15", 80, 200]} />
 
       <TwinLighting />
       <TwinGround />

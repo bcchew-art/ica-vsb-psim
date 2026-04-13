@@ -62,11 +62,42 @@ function WindowGrid({
         <mesh key={i} position={[w.x, w.y, 0]}>
           <boxGeometry args={[0.8, 0.55, 0.05]} />
           <meshStandardMaterial
-            color="#1a3a5a"
-            emissive="#1a3a5a"
-            emissiveIntensity={0.6}
+            color="#1a6090"
+            emissive="#1a6090"
+            emissiveIntensity={1.5}
             roughness={0.2}
             metalness={0.5}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// Internal floor plates — visible floor levels through glass
+function FloorPlates({ w, h, d }: { w: number; h: number; d: number }) {
+  const numFloors = 3;
+  const plates = useMemo(() => {
+    const result: number[] = [];
+    for (let i = 1; i <= numFloors; i++) {
+      // evenly space floors from -h/2 to h/2
+      const yFrac = i / (numFloors + 1);
+      result.push(-h / 2 + yFrac * h);
+    }
+    return result;
+  }, [h]);
+
+  return (
+    <group>
+      {plates.map((yPos, i) => (
+        <mesh key={i} position={[0, yPos, 0]}>
+          <boxGeometry args={[w, 0.05, d]} />
+          <meshStandardMaterial
+            color="#0a4080"
+            emissive="#0a4080"
+            emissiveIntensity={0.6}
+            transparent
+            opacity={0.3}
           />
         </mesh>
       ))}
@@ -127,18 +158,24 @@ function Building({ config }: { config: BuildingConfig }) {
 
   return (
     <group position={[position[0], position[1] + h / 2, position[2]]}>
-      {/* Main building body */}
+      {/* Main building body — glass-like translucent */}
       <mesh castShadow receiveShadow>
         <boxGeometry args={[w, h, d]} />
-        <meshStandardMaterial
-          color="#0d1824"
-          metalness={0.35}
-          roughness={0.65}
-          emissive="#0a1525"
-          emissiveIntensity={0.25}
+        <meshPhysicalMaterial
+          color="#0a2040"
+          emissive="#0a3060"
+          emissiveIntensity={0.8}
+          transmission={0.4}
+          roughness={0.15}
+          metalness={0.1}
+          transparent
+          opacity={0.85}
         />
-        <Edges color="#2F5FD0" lineWidth={1} />
+        <Edges color="#00bbff" lineWidth={2} />
       </mesh>
+
+      {/* Internal floor plates — visible through glass */}
+      <FloorPlates w={w} h={h} d={d} />
 
       {/* Window grids on long faces (front & back — along Z axis) */}
       {/* Front face (positive Z) */}
@@ -178,7 +215,7 @@ function Building({ config }: { config: BuildingConfig }) {
       <mesh position={[0, h / 2 + 0.06, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[w * 0.8, d * 0.8]} />
         <meshBasicMaterial
-          color="#2F5FD0"
+          color="#00bbff"
           transparent
           opacity={0.07}
           side={DoubleSide}

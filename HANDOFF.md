@@ -36,3 +36,4 @@ Full 3D Digital Twin of Tuas Checkpoint, replacing the SVG site-overview on `/ma
 ## Session Log
 - 2026-04-13: Built full 3D Digital Twin (7 files), `/map` page replaced, tsc + build both pass clean
 - 2026-04-13: Visual upgrade — window grids, rooftop AC/parapet, glass lobby, trees, streetlights, boom gates, perimeter fence, road curbs + lane markings, grass + parking areas, fog, per-building point lights, equipment pin markers (orb + stem + ground ring), zone scan-line animation; tsc + build both pass clean
+- 2026-04-13: Hyper-realistic upgrade — MeshPhysicalMaterial glass buildings (transmission 0.4) + internal floor plates, bright cyan lane markings (emissiveIntensity 3.0), circuit-board Grid (cellSize 4 / sectionSize 20) + radial glow, zones height→22 + top rings + emissiveIntensity 4.0, Zone D→purple #6633cc / Zone F→magenta #9945ff, equipment orb emissive 5.0; tsc + build both pass clean

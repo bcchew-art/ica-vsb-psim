@@ -22,9 +22,9 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: "A",
     label: "WEST ENTRY",
     description: "JB approach blockers + road humps",
-    position: [-75, 7.5, 5],
+    position: [-75, 11, 5],
     radius: 15,
-    height: 15,
+    height: 22,
     color: "#3b82f6",
     equipmentCount: 3,
   },
@@ -32,9 +32,9 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: "B",
     label: "SOUTH APPROACH",
     description: "Mixed blockers + road humps",
-    position: [-40, 7.5, 35],
+    position: [-40, 11, 35],
     radius: 18,
-    height: 15,
+    height: 22,
     color: "#8b5cf6",
     equipmentCount: 5,
   },
@@ -42,10 +42,10 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: "C",
     label: "EAST GATE",
     description: "SG approach — DEMO ZONE",
-    position: [65, 7.5, 0],
+    position: [65, 11, 0],
     radius: 18,
-    height: 15,
-    color: "#06B6D4",
+    height: 22,
+    color: "#00ddff",
     isDemo: true,
     equipmentCount: 4,
   },
@@ -53,19 +53,19 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: "D",
     label: "NORTH RETURN",
     description: "Return lanes, bollards",
-    position: [30, 7.5, -35],
+    position: [30, 11, -35],
     radius: 15,
-    height: 15,
-    color: "#10b981",
+    height: 22,
+    color: "#6633cc",
     equipmentCount: 4,
   },
   {
     id: "E",
     label: "INTERNAL",
     description: "Within building",
-    position: [0, 7.5, 15],
+    position: [0, 11, 15],
     radius: 12,
-    height: 15,
+    height: 22,
     color: "#f59e0b",
     equipmentCount: 4,
   },
@@ -73,10 +73,10 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
     id: "F",
     label: "BRIDGE L3",
     description: "Level 3 bridge equipment",
-    position: [-80, 7.5, -25],
+    position: [-80, 11, -25],
     radius: 22,
-    height: 15,
-    color: "#ec4899",
+    height: 22,
+    color: "#9945ff",
     equipmentCount: 12,
   },
 ];
@@ -94,6 +94,7 @@ function PulsingZone({
   const ringRef = useRef<Mesh>(null);
   const outerRingRef = useRef<Mesh>(null);
   const scanRef = useRef<Mesh>(null);
+  const topRingRef = useRef<Mesh>(null);
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
@@ -101,7 +102,7 @@ function PulsingZone({
     // Cylinder opacity — slow pulse
     if (cylinderRef.current) {
       const mat = cylinderRef.current.material as { opacity: number };
-      const base = zone.isDemo ? 0.13 : isSelected ? 0.10 : 0.05;
+      const base = zone.isDemo ? 0.15 : isSelected ? 0.10 : 0.08;
       mat.opacity = base + Math.sin(t * (zone.isDemo ? 1.8 : 1.2)) * 0.03;
     }
 
@@ -122,16 +123,21 @@ function PulsingZone({
     // Vertical scan line: oscillates up and down inside cylinder
     if (scanRef.current) {
       const halfH = zone.height / 2;
-      // y relative to group center (which is zone.position[1])
       const scanY = Math.sin(t * 1.5) * halfH * 0.85;
       scanRef.current.position.y = scanY;
       const mat = scanRef.current.material as { opacity: number };
-      mat.opacity = 0.12 + Math.sin(t * 3) * 0.06;
+      mat.opacity = 0.18 + Math.sin(t * 3) * 0.08;
+    }
+
+    // Top ring counter-rotation for visual interest
+    if (topRingRef.current) {
+      topRingRef.current.rotation.z -= 0.004;
     }
   });
 
-  const opacity = zone.isDemo ? 0.15 : isSelected ? 0.12 : 0.06;
+  const opacity = zone.isDemo ? 0.15 : isSelected ? 0.12 : 0.08;
   const ringOpacity = zone.isDemo ? 0.8 : isSelected ? 0.7 : 0.4;
+  const cylinderHeight = zone.height;
 
   return (
     <group
@@ -149,7 +155,7 @@ function PulsingZone({
     >
       {/* Zone cylinder volume */}
       <mesh ref={cylinderRef}>
-        <cylinderGeometry args={[zone.radius, zone.radius, zone.height, 48, 1, true]} />
+        <cylinderGeometry args={[zone.radius, zone.radius, cylinderHeight, 48, 1, true]} />
         <meshBasicMaterial
           color={zone.color}
           transparent
@@ -158,26 +164,30 @@ function PulsingZone({
         />
       </mesh>
 
-      {/* Vertical scan plane — thin horizontal disc that travels up/down */}
+      {/* Vertical scan plane — thin horizontal disc that travels up/down — brighter */}
       <mesh ref={scanRef} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[zone.radius - 0.5, 48]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color={zone.color}
+          emissive={zone.color}
+          emissiveIntensity={2.0}
           transparent
-          opacity={0.12}
+          opacity={0.18}
           side={DoubleSide}
         />
       </mesh>
 
-      {/* Base ring — inner */}
+      {/* Base ring — inner (glowing bright) */}
       <mesh
         ref={ringRef}
-        position={[0, -zone.height / 2 + 0.1, 0]}
+        position={[0, -cylinderHeight / 2 + 0.1, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <ringGeometry args={[zone.radius - 0.8, zone.radius + 0.8, 64]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color={zone.color}
+          emissive={zone.color}
+          emissiveIntensity={4.0}
           transparent
           opacity={ringOpacity}
           side={DoubleSide}
@@ -187,37 +197,58 @@ function PulsingZone({
       {/* Base ring — outer (slowly rotating dashed feel) */}
       <mesh
         ref={outerRingRef}
-        position={[0, -zone.height / 2 + 0.05, 0]}
+        position={[0, -cylinderHeight / 2 + 0.05, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <ringGeometry args={[zone.radius + 1.5, zone.radius + 3.0, 32]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color={zone.color}
+          emissive={zone.color}
+          emissiveIntensity={4.0}
           transparent
           opacity={ringOpacity * 0.3}
           side={DoubleSide}
         />
       </mesh>
 
-      {/* Top ring */}
+      {/* Top ring — at cylinder peak, slightly dimmer */}
       <mesh
-        position={[0, zone.height / 2 - 0.1, 0]}
+        ref={topRingRef}
+        position={[0, cylinderHeight / 2 - 0.1, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <ringGeometry args={[zone.radius - 0.8, zone.radius + 0.8, 64]} />
+        <meshStandardMaterial
+          color={zone.color}
+          emissive={zone.color}
+          emissiveIntensity={2.5}
+          transparent
+          opacity={ringOpacity * 0.6}
+          side={DoubleSide}
+        />
+      </mesh>
+
+      {/* Top ring — outer */}
+      <mesh
+        position={[0, cylinderHeight / 2 - 0.2, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <ringGeometry args={[zone.radius - 1.5, zone.radius, 64]} />
-        <meshBasicMaterial
+        <meshStandardMaterial
           color={zone.color}
+          emissive={zone.color}
+          emissiveIntensity={2.0}
           transparent
-          opacity={ringOpacity * 0.5}
+          opacity={ringOpacity * 0.4}
           side={DoubleSide}
         />
       </mesh>
 
       {/* Zone label */}
       <Text
-        position={[0, zone.height / 2 + 3, 0]}
+        position={[0, cylinderHeight / 2 + 3, 0]}
         fontSize={2.2}
-        color={zone.isDemo ? "#06B6D4" : "#8899b0"}
+        color={zone.isDemo ? "#00ddff" : "#8899b0"}
         anchorX="center"
         anchorY="middle"
         fillOpacity={zone.isDemo ? 1.0 : 0.8}
@@ -227,7 +258,7 @@ function PulsingZone({
 
       {/* Equipment count */}
       <Text
-        position={[0, zone.height / 2 + 0.5, 0]}
+        position={[0, cylinderHeight / 2 + 0.5, 0]}
         fontSize={1.4}
         color={zone.color}
         anchorX="center"
@@ -240,19 +271,19 @@ function PulsingZone({
       {/* Demo badge */}
       {zone.isDemo && (
         <Html
-          position={[0, zone.height / 2 + 7, 0]}
+          position={[0, cylinderHeight / 2 + 7, 0]}
           center
           style={{ pointerEvents: "none" }}
         >
           <div
             style={{
-              background: "rgba(6,182,212,0.15)",
-              border: "1px solid #06B6D4",
+              background: "rgba(0,221,255,0.15)",
+              border: "1px solid #00ddff",
               borderRadius: "4px",
               padding: "2px 8px",
               fontSize: "10px",
               fontFamily: "monospace",
-              color: "#06B6D4",
+              color: "#00ddff",
               letterSpacing: "0.1em",
               whiteSpace: "nowrap",
               backdropFilter: "blur(4px)",
