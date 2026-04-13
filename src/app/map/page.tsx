@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Map, Camera, ChevronDown, ChevronUp } from "lucide-react";
+import { Camera, ChevronDown, ChevronUp } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
-import { SiteOverview } from "@/components/psim/site-overview/site-overview";
+import { TwinScene } from "@/components/3d/digital-twin/twin-scene";
 import { CctvPanel } from "@/components/psim/site-overview/cctv-panel";
 import { cn } from "@/lib/utils";
 
@@ -12,13 +12,15 @@ export default function MapPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-col gap-space-5">
+      <div className="flex flex-col gap-space-5 h-full">
         {/* Page header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-shrink-0">
           <div>
-            <h1 className="text-h2 text-text-primary font-semibold">Site Overview</h1>
+            <h1 className="text-h2 text-text-primary font-semibold">
+              Digital Twin — Tuas Checkpoint
+            </h1>
             <p className="text-body-sm text-text-secondary mt-1">
-              Schematic map of VSB equipment across Tuas and Woodlands checkpoints
+              3D command view of VSB equipment deployment across the Tuas compound
             </p>
           </div>
           <div className="flex items-center gap-space-3">
@@ -29,7 +31,7 @@ export default function MapPage() {
                 "flex items-center gap-2 px-space-3 py-space-2 rounded-md border text-label font-medium transition-all duration-150",
                 cctvOpen
                   ? "bg-[var(--color-ica-navy)] text-white border-[var(--color-ica-navy)]"
-                  : "bg-surface border-border text-text-secondary hover:text-text-primary hover:border-[var(--color-ica-blue)]"
+                  : "bg-surface border-border text-text-secondary hover:text-text-primary hover:border-[var(--color-ica-blue)]",
               )}
             >
               <Camera size={14} />
@@ -40,17 +42,19 @@ export default function MapPage() {
             {/* Live indicator */}
             <div className="flex items-center gap-space-2 px-space-3 py-space-2 rounded-md bg-surface border border-border">
               <span className="w-2 h-2 rounded-full bg-status-open animate-pulse" />
-              <span className="text-label text-text-secondary">Live Feed Active</span>
+              <span className="text-label text-text-secondary font-mono">LIVE</span>
             </div>
           </div>
         </div>
 
-        {/* Site Overview map */}
-        <SiteOverview />
+        {/* Digital Twin canvas — fills remaining height */}
+        <div className="flex-1 min-h-[600px] rounded-lg overflow-hidden border border-[#1a2a40]">
+          <TwinScene />
+        </div>
 
         {/* CCTV Panel — collapsible */}
         {cctvOpen && (
-          <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="animate-in fade-in slide-in-from-top-2 duration-200 flex-shrink-0">
             <CctvPanel />
           </div>
         )}
