@@ -3,42 +3,163 @@
 import { useMemo } from "react";
 import { DoubleSide } from "three";
 
-// Road surface material props shared across all road meshes
-function RoadPlane({
-  position,
-  rotation,
-  args,
+// ── Single dash for centre-line markings ────────────────────────────────────
+function CentreDashes({
+  length,
+  width,
+  posX,
+  posZ,
+  rotY,
 }: {
-  position: [number, number, number];
-  rotation: [number, number, number];
-  args: [number, number];
+  length: number;
+  width: number;
+  posX: number;
+  posZ: number;
+  rotY: number;
 }) {
-  const planeArgs = useMemo<[number, number]>(() => args, [args]);
+  const dashLen = 2;
+  const gap = 1.5;
+  const repeat = dashLen + gap;
+  const count = Math.floor(length / repeat);
+  const dashes = useMemo(() => {
+    const result: number[] = [];
+    for (let i = 0; i < count; i++) {
+      result.push(-length / 2 + dashLen / 2 + i * repeat);
+    }
+    return result;
+  }, [count, length, repeat]);
+
+  // local unit vectors based on rotY
+  const cosR = Math.cos(rotY);
+  const sinR = Math.sin(rotY);
+
+  return (
+    <>
+      {dashes.map((t, i) => {
+        // offset along the road axis
+        const wx = posX + t * cosR;
+        const wz = posZ + t * sinR;
+        return (
+          <mesh key={i} position={[wx, 0.03, wz]} rotation={[0, -rotY, 0]}>
+            <planeGeometry args={[dashLen, 0.15]} />
+            <meshBasicMaterial
+              color="#2F5FD0"
+              transparent
+              opacity={0.65}
+              side={DoubleSide}
+            />
+          </mesh>
+        );
+      })}
+    </>
+  );
+}
+
+// ── Edge line (solid emissive strip along road edge) ────────────────────────
+function EdgeLine({
+  length,
+  posX,
+  posY,
+  posZ,
+  rotY,
+  sideOffset,
+}: {
+  length: number;
+  posX: number;
+  posY: number;
+  posZ: number;
+  rotY: number;
+  sideOffset: number;
+}) {
+  const perpX = -Math.sin(rotY) * sideOffset;
+  const perpZ = Math.cos(rotY) * sideOffset;
+  return (
+    <mesh
+      position={[posX + perpX, posY + 0.015, posZ + perpZ]}
+      rotation={[0, -rotY, 0]}
+    >
+      <planeGeometry args={[length, 0.18]} />
+      <meshBasicMaterial
+        color="#2F5FD0"
+        transparent
+        opacity={0.45}
+        side={DoubleSide}
+      />
+    </mesh>
+  );
+}
+
+// ── Curb strip ───────────────────────────────────────────────────────────────
+function Curb({
+  length,
+  posX,
+  posY,
+  posZ,
+  rotY,
+  sideOffset,
+  roadWidth,
+}: {
+  length: number;
+  posX: number;
+  posY: number;
+  posZ: number;
+  rotY: number;
+  sideOffset: number;
+  roadWidth: number;
+}) {
+  const perpX = -Math.sin(rotY) * (sideOffset * (roadWidth / 2 + 0.15));
+  const perpZ = Math.cos(rotY) * (sideOffset * (roadWidth / 2 + 0.15));
+  return (
+    <mesh position={[posX + perpX, posY + 0.075, posZ + perpZ]} rotation={[0, -rotY, 0]}>
+      <boxGeometry args={[length, 0.15, 0.3]} />
+      <meshStandardMaterial color="#1e2a3a" roughness={0.95} />
+    </mesh>
+  );
+}
+
+// ── Full road segment ────────────────────────────────────────────────────────
+function RoadSegment({
+  posX,
+  posY,
+  posZ,
+  rotY,
+  length,
+  width,
+}: {
+  posX: number;
+  posY: number;
+  posZ: number;
+  rotY: number;
+  length: number;
+  width: number;
+}) {
   return (
     <group>
-      {/* Road base */}
-      <mesh position={position} rotation={rotation} receiveShadow>
-        <planeGeometry args={planeArgs} />
+      {/* Road surface */}
+      <mesh
+        position={[posX, posY, posZ]}
+        rotation={[-Math.PI / 2, 0, -rotY]}
+        receiveShadow
+      >
+        <planeGeometry args={[length, width]} />
         <meshStandardMaterial
-          color="#141e2e"
-          metalness={0.05}
+          color="#0f1822"
+          metalness={0.02}
           roughness={0.95}
           side={DoubleSide}
         />
       </mesh>
-      {/* Centre-line lane marking — thin emissive strip */}
-      <mesh
-        position={[position[0], position[1] + 0.01, position[2]]}
-        rotation={rotation}
-      >
-        <planeGeometry args={[planeArgs[0], 0.25]} />
-        <meshBasicMaterial
-          color="#2F5FD0"
-          transparent
-          opacity={0.55}
-          side={DoubleSide}
-        />
-      </mesh>
+
+      {/* Edge lines */}
+      <EdgeLine length={length} posX={posX} posY={posY} posZ={posZ} rotY={rotY} sideOffset={width / 2 - 0.4} />
+      <EdgeLine length={length} posX={posX} posY={posY} posZ={posZ} rotY={rotY} sideOffset={-(width / 2 - 0.4)} />
+
+      {/* Centre dashes */}
+      <CentreDashes length={length} width={width} posX={posX} posZ={posZ} rotY={rotY} />
+
+      {/* Curbs */}
+      <Curb length={length} posX={posX} posY={posY} posZ={posZ} rotY={rotY} sideOffset={1} roadWidth={width} />
+      <Curb length={length} posX={posX} posY={posY} posZ={posZ} rotY={rotY} sideOffset={-1} roadWidth={width} />
     </group>
   );
 }
@@ -47,57 +168,57 @@ export function TwinRoads() {
   return (
     <group>
       {/* ── Main east–west arterial ────────────────────────────────── */}
-      <RoadPlane
-        position={[0, 0.05, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        args={[220, 12]}
+      <RoadSegment
+        posX={0} posY={0.05} posZ={0}
+        rotY={0}
+        length={220} width={10}
       />
 
       {/* ── North perimeter road (west segment) ───────────────────── */}
-      <RoadPlane
-        position={[-55, 0.05, -42]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 8]}
-        args={[60, 8]}
+      <RoadSegment
+        posX={-55} posY={0.05} posZ={-42}
+        rotY={Math.PI / 8}
+        length={60} width={8}
       />
       {/* ── North perimeter road (east segment) ───────────────────── */}
-      <RoadPlane
-        position={[45, 0.05, -42]}
-        rotation={[-Math.PI / 2, 0, -Math.PI / 8]}
-        args={[60, 8]}
+      <RoadSegment
+        posX={45} posY={0.05} posZ={-42}
+        rotY={-Math.PI / 8}
+        length={60} width={8}
       />
 
       {/* ── South perimeter road (west segment) ───────────────────── */}
-      <RoadPlane
-        position={[-55, 0.05, 42]}
-        rotation={[-Math.PI / 2, 0, -Math.PI / 8]}
-        args={[60, 8]}
+      <RoadSegment
+        posX={-55} posY={0.05} posZ={42}
+        rotY={-Math.PI / 8}
+        length={60} width={8}
       />
       {/* ── South perimeter road (east segment) ───────────────────── */}
-      <RoadPlane
-        position={[45, 0.05, 42]}
-        rotation={[-Math.PI / 2, 0, Math.PI / 8]}
-        args={[60, 8]}
+      <RoadSegment
+        posX={45} posY={0.05} posZ={42}
+        rotY={Math.PI / 8}
+        length={60} width={8}
       />
 
-      {/* ── Bridge approach — elevated section ─────────────────────── */}
+      {/* ── Bridge approach — elevated raw meshes (keep original feel) ── */}
       {/* High segment: elevated ~5 units */}
       <mesh position={[-105, 5, 35]} rotation={[-Math.PI / 2, 0, -Math.PI / 6]}>
         <planeGeometry args={[30, 10]} />
-        <meshStandardMaterial color="#141e2e" metalness={0.05} roughness={0.95} side={DoubleSide} />
+        <meshStandardMaterial color="#0f1822" metalness={0.02} roughness={0.95} side={DoubleSide} />
       </mesh>
-      {/* Ramp segment: descends from ~5 to ground */}
+      {/* Ramp segment */}
       <mesh position={[-92, 2.5, 20]} rotation={[-Math.PI / 2 + 0.15, 0, -Math.PI / 5]}>
         <planeGeometry args={[28, 10]} />
-        <meshStandardMaterial color="#141e2e" metalness={0.05} roughness={0.95} side={DoubleSide} />
+        <meshStandardMaterial color="#0f1822" metalness={0.02} roughness={0.95} side={DoubleSide} />
       </mesh>
-      {/* Ground connection segment */}
-      <RoadPlane
-        position={[-82, 0.05, 8]}
-        rotation={[-Math.PI / 2, 0, -Math.PI / 10]}
-        args={[22, 10]}
+      {/* Ground connection */}
+      <RoadSegment
+        posX={-82} posY={0.05} posZ={8}
+        rotY={Math.PI / 10}
+        length={22} width={10}
       />
 
-      {/* Bridge guard rails — thin emissive bars */}
+      {/* Bridge guard rails */}
       <mesh position={[-98, 6.5, 38]}>
         <boxGeometry args={[28, 0.3, 0.3]} />
         <meshBasicMaterial color="#2F5FD0" transparent opacity={0.6} />

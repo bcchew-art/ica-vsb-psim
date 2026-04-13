@@ -3,19 +3,18 @@
 import { useRef, useState, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
-import { Mesh, Color } from "three";
+import { Mesh } from "three";
 import { tuasCheckpoint, EQUIPMENT_COLORS } from "@/lib/checkpoint-data";
 import type { EquipmentLocation } from "@/lib/checkpoint-data";
 
 // ── Coordinate conversion ──────────────────────────────────────────────────
-// SVG space: 0-1000 x, 0-800 y  →  3D world space centered at origin
 function svgToWorld(x: number, y: number): [number, number, number] {
   const worldX = (x - 500) * 0.22;
   const worldZ = (y - 400) * 0.22;
-  return [worldX, 1.5, worldZ];
+  return [worldX, 0, worldZ];
 }
 
-// ── Single equipment dot ──────────────────────────────────────────────────
+// ── Single equipment dot — pin style ──────────────────────────────────────
 function EquipmentDot({
   loc,
   isSelected,
@@ -31,65 +30,100 @@ function EquipmentDot({
   onHoverIn: () => void;
   onHoverOut: () => void;
 }) {
-  const meshRef = useRef<Mesh>(null);
+  const sphereRef = useRef<Mesh>(null);
   const ringRef = useRef<Mesh>(null);
-  const position = useMemo(() => svgToWorld(loc.x, loc.y), [loc.x, loc.y]);
+  const outerRingRef = useRef<Mesh>(null);
+
+  const base = useMemo(() => svgToWorld(loc.x, loc.y), [loc.x, loc.y]);
+  // Position the group at ground level; sphere sits on top of stem
+  const position: [number, number, number] = [base[0], base[1], base[2]];
   const color = EQUIPMENT_COLORS[loc.type] ?? "#ffffff";
 
   useFrame((state) => {
-    if (!meshRef.current) return;
     const t = state.clock.elapsedTime;
 
-    // Hover/select scale
-    const targetScale = isSelected ? 1.6 : isHovered ? 1.3 : 1.0;
-    meshRef.current.scale.lerp({ x: targetScale, y: targetScale, z: targetScale } as never, 0.15);
+    // Scale orb on hover/select
+    if (sphereRef.current) {
+      const targetScale = isSelected ? 1.6 : isHovered ? 1.3 : 1.0;
+      const cur = sphereRef.current.scale.x;
+      const next = cur + (targetScale - cur) * 0.15;
+      sphereRef.current.scale.setScalar(next);
+    }
 
-    // Pulsing ring on selection
+    // Rotate ground ring slowly
     if (ringRef.current) {
-      ringRef.current.visible = isSelected;
+      ringRef.current.rotation.z += 0.012;
+      const mat = ringRef.current.material as { opacity: number };
+      if (isSelected || isHovered) {
+        mat.opacity = 0.5 + Math.sin(t * 4) * 0.2;
+      } else {
+        mat.opacity = 0.25;
+      }
+    }
+
+    // Outer ring pulses on select
+    if (outerRingRef.current) {
+      outerRingRef.current.visible = isSelected;
       if (isSelected) {
-        const s = 1 + Math.sin(t * 4) * 0.2;
-        ringRef.current.scale.set(s, 1, s);
-        const mat = ringRef.current.material as { opacity: number };
-        mat.opacity = 0.6 + Math.sin(t * 4) * 0.3;
+        const s = 1 + Math.sin(t * 3) * 0.12;
+        outerRingRef.current.scale.set(s, s, 1);
+        const mat = outerRingRef.current.material as { opacity: number };
+        mat.opacity = 0.3 + Math.sin(t * 3) * 0.15;
       }
     }
   });
 
   return (
     <group position={position}>
-      {/* Main sphere */}
+      {/* Vertical stem from ground to orb */}
+      <mesh position={[0, 0.75, 0]}>
+        <cylinderGeometry args={[0.04, 0.04, 1.5, 5]} />
+        <meshBasicMaterial color={color} transparent opacity={0.45} />
+      </mesh>
+
+      {/* Ground ring */}
       <mesh
-        ref={meshRef}
+        ref={ringRef}
+        position={[0, 0.02, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <ringGeometry args={[1.0, 1.3, 32]} />
+        <meshBasicMaterial color={color} transparent opacity={0.25} />
+      </mesh>
+
+      {/* Outer pulse ring (selection only) */}
+      <mesh
+        ref={outerRingRef}
+        position={[0, 0.02, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        visible={false}
+      >
+        <ringGeometry args={[1.5, 1.9, 32]} />
+        <meshBasicMaterial color={color} transparent opacity={0.2} />
+      </mesh>
+
+      {/* Glowing orb */}
+      <mesh
+        ref={sphereRef}
+        position={[0, 1.6, 0]}
         onClick={(e) => { e.stopPropagation(); onClick(); }}
         onPointerOver={(e) => { e.stopPropagation(); onHoverIn(); }}
         onPointerOut={(e) => { e.stopPropagation(); onHoverOut(); }}
       >
-        <sphereGeometry args={[0.8, 12, 12]} />
+        <sphereGeometry args={[0.6, 12, 12]} />
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={2.0}
-          metalness={0.2}
-          roughness={0.3}
+          emissiveIntensity={3.0}
+          metalness={0.1}
+          roughness={0.2}
         />
-      </mesh>
-
-      {/* Selection pulse ring */}
-      <mesh
-        ref={ringRef}
-        position={[0, -1.4, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        visible={false}
-      >
-        <ringGeometry args={[1.2, 1.8, 32]} />
-        <meshBasicMaterial color={color} transparent opacity={0.8} />
       </mesh>
 
       {/* Hover tooltip */}
       {isHovered && (
         <Html
-          position={[0, 2.5, 0]}
+          position={[0, 3.2, 0]}
           center
           style={{ pointerEvents: "none" }}
         >
@@ -106,9 +140,7 @@ function EquipmentDot({
               backdropFilter: "blur(6px)",
             }}
           >
-            <div style={{ color, fontWeight: "bold" }}>
-              {loc.mapRef}
-            </div>
+            <div style={{ color, fontWeight: "bold" }}>{loc.mapRef}</div>
             <div>{loc.type.replace(/-/g, " ").toUpperCase()}</div>
             <div style={{ color: "#8899b0", fontSize: "9px", marginTop: "2px" }}>
               {loc.direction}
@@ -120,7 +152,7 @@ function EquipmentDot({
       {/* Selected detail panel */}
       {isSelected && (
         <Html
-          position={[2.5, 0, 0]}
+          position={[2.5, 1.6, 0]}
           style={{ pointerEvents: "none" }}
         >
           <div

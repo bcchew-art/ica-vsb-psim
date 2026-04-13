@@ -81,29 +81,52 @@ export const ZONE_CONFIGS: ZoneConfig[] = [
   },
 ];
 
-function PulsingZone({ zone, isSelected, onClick }: {
+function PulsingZone({
+  zone,
+  isSelected,
+  onClick,
+}: {
   zone: ZoneConfig;
   isSelected: boolean;
   onClick: () => void;
 }) {
   const cylinderRef = useRef<Mesh>(null);
   const ringRef = useRef<Mesh>(null);
+  const outerRingRef = useRef<Mesh>(null);
+  const scanRef = useRef<Mesh>(null);
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
 
-    if (zone.isDemo && cylinderRef.current) {
-      // Pulsing opacity for demo zone
+    // Cylinder opacity — slow pulse
+    if (cylinderRef.current) {
       const mat = cylinderRef.current.material as { opacity: number };
-      mat.opacity = 0.12 + Math.sin(t * 2) * 0.06;
+      const base = zone.isDemo ? 0.13 : isSelected ? 0.10 : 0.05;
+      mat.opacity = base + Math.sin(t * (zone.isDemo ? 1.8 : 1.2)) * 0.03;
     }
 
+    // Base ring scale pulse
     if (ringRef.current) {
       const pulse = zone.isDemo || isSelected;
       if (pulse) {
         const s = 1 + Math.sin(t * (zone.isDemo ? 2.5 : 3)) * 0.05;
         ringRef.current.scale.set(s, 1, s);
       }
+    }
+
+    // Outer ring slow rotation
+    if (outerRingRef.current) {
+      outerRingRef.current.rotation.z += 0.006;
+    }
+
+    // Vertical scan line: oscillates up and down inside cylinder
+    if (scanRef.current) {
+      const halfH = zone.height / 2;
+      // y relative to group center (which is zone.position[1])
+      const scanY = Math.sin(t * 1.5) * halfH * 0.85;
+      scanRef.current.position.y = scanY;
+      const mat = scanRef.current.material as { opacity: number };
+      mat.opacity = 0.12 + Math.sin(t * 3) * 0.06;
     }
   });
 
@@ -113,9 +136,16 @@ function PulsingZone({ zone, isSelected, onClick }: {
   return (
     <group
       position={zone.position}
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      onPointerOver={() => { document.body.style.cursor = "pointer"; }}
-      onPointerOut={() => { document.body.style.cursor = "default"; }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      onPointerOver={() => {
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "default";
+      }}
     >
       {/* Zone cylinder volume */}
       <mesh ref={cylinderRef}>
@@ -128,7 +158,18 @@ function PulsingZone({ zone, isSelected, onClick }: {
         />
       </mesh>
 
-      {/* Base ring */}
+      {/* Vertical scan plane — thin horizontal disc that travels up/down */}
+      <mesh ref={scanRef} position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[zone.radius - 0.5, 48]} />
+        <meshBasicMaterial
+          color={zone.color}
+          transparent
+          opacity={0.12}
+          side={DoubleSide}
+        />
+      </mesh>
+
+      {/* Base ring — inner */}
       <mesh
         ref={ringRef}
         position={[0, -zone.height / 2 + 0.1, 0]}
@@ -139,6 +180,21 @@ function PulsingZone({ zone, isSelected, onClick }: {
           color={zone.color}
           transparent
           opacity={ringOpacity}
+          side={DoubleSide}
+        />
+      </mesh>
+
+      {/* Base ring — outer (slowly rotating dashed feel) */}
+      <mesh
+        ref={outerRingRef}
+        position={[0, -zone.height / 2 + 0.05, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <ringGeometry args={[zone.radius + 1.5, zone.radius + 3.0, 32]} />
+        <meshBasicMaterial
+          color={zone.color}
+          transparent
+          opacity={ringOpacity * 0.3}
           side={DoubleSide}
         />
       </mesh>
@@ -181,7 +237,7 @@ function PulsingZone({ zone, isSelected, onClick }: {
         {`${zone.equipmentCount} units`}
       </Text>
 
-      {/* Demo badge — HTML overlay for crisp text */}
+      {/* Demo badge */}
       {zone.isDemo && (
         <Html
           position={[0, zone.height / 2 + 7, 0]}
@@ -226,7 +282,13 @@ function PulsingZone({ zone, isSelected, onClick }: {
               backdropFilter: "blur(8px)",
             }}
           >
-            <div style={{ color: zone.color, fontWeight: "bold", marginBottom: "4px" }}>
+            <div
+              style={{
+                color: zone.color,
+                fontWeight: "bold",
+                marginBottom: "4px",
+              }}
+            >
               ZONE {zone.id} — {zone.label}
             </div>
             <div>{zone.description}</div>
@@ -254,7 +316,9 @@ export function TwinZones({
           key={zone.id}
           zone={zone}
           isSelected={selectedZone === zone.id}
-          onClick={() => onSelectZone(selectedZone === zone.id ? null : zone.id)}
+          onClick={() =>
+            onSelectZone(selectedZone === zone.id ? null : zone.id)
+          }
         />
       ))}
     </group>

@@ -14,20 +14,33 @@ import { TwinHud } from "./twin-hud";
 function TwinLighting() {
   return (
     <>
-      <ambientLight color="#1a2a40" intensity={0.3} />
+      <ambientLight color="#1a2a40" intensity={0.35} />
       <directionalLight
         color="#4a6a9a"
-        intensity={0.5}
+        intensity={0.6}
         position={[50, 80, 30]}
         castShadow
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-far={300}
+        shadow-camera-left={-150}
+        shadow-camera-right={150}
+        shadow-camera-top={150}
+        shadow-camera-bottom={-150}
       />
-      <hemisphereLight
-        args={["#1a2a40", "#050a15", 0.2]}
-      />
-      {/* Subtle point lights for building glow */}
+      <hemisphereLight args={["#1a2a40", "#050a15", 0.2]} />
+
+      {/* Primary scene point lights */}
       <pointLight color="#2F5FD0" intensity={1.5} position={[0, 15, 0]} distance={60} decay={2} />
       <pointLight color="#06B6D4" intensity={1.0} position={[65, 10, 0]} distance={40} decay={2} />
+
+      {/* Per-building local fill lights */}
+      <pointLight color="#1a3050" intensity={0.4} position={[0, 8, 0]} distance={25} decay={2} />
+      <pointLight color="#1a3050" intensity={0.3} position={[-35, 6, -8]} distance={18} decay={2} />
+      <pointLight color="#1a3050" intensity={0.3} position={[35, 6, -8]} distance={18} decay={2} />
+      <pointLight color="#1a3050" intensity={0.25} position={[0, 4, -30]} distance={15} decay={2} />
+      <pointLight color="#1a3050" intensity={0.25} position={[0, 4, 30]} distance={15} decay={2} />
+      <pointLight color="#1a2535" intensity={0.2} position={[-70, 3, 0]} distance={12} decay={2} />
+      <pointLight color="#1a2535" intensity={0.2} position={[70, 3, 0]} distance={12} decay={2} />
     </>
   );
 }
@@ -45,6 +58,9 @@ function SceneContent({
 }) {
   return (
     <>
+      {/* Exponential fog for depth */}
+      <fog attach="fog" args={["#050a15", 80, 250]} />
+
       <TwinLighting />
       <TwinGround />
       <TwinRoads />
