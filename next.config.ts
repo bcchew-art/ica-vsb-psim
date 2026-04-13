@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "export",
+  basePath: "/ica-vsb-psim",
+  assetPrefix: "/ica-vsb-psim/",
 };
 
 export default nextConfig;
