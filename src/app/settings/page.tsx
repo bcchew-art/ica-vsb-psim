@@ -1,5 +1,6 @@
 "use client";
 
+import { AppShell } from "@/components/layout/app-shell";
 import {
   Settings,
   Shield,
@@ -115,6 +116,7 @@ function Toggle({ enabled }: { enabled: boolean }) {
 
 export default function SettingsPage() {
   return (
+    <AppShell>
     <div className="flex flex-col gap-space-5 max-w-3xl">
       {/* Page header */}
       <div className="flex items-center justify-between">
@@ -159,5 +161,6 @@ export default function SettingsPage() {
         </div>
       ))}
     </div>
+    </AppShell>
   );
 }

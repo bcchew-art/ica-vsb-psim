@@ -1,5 +1,6 @@
 "use client";
 
+import { AppShell } from "@/components/layout/app-shell";
 import {
   ChevronUp,
   Circle,
@@ -104,6 +105,7 @@ const totalOffline = equipment.reduce((s, e) => s + e.offline, 0);
 
 export default function EquipmentPage() {
   return (
+    <AppShell>
     <div className="flex flex-col gap-space-5">
       {/* Page header */}
       <div className="flex items-center justify-between">
@@ -198,5 +200,6 @@ export default function EquipmentPage() {
         })}
       </div>
     </div>
+    </AppShell>
   );
 }

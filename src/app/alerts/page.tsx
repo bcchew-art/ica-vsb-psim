@@ -2,6 +2,7 @@
 
 import { ShieldAlert, CheckCircle, Clock, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AppShell } from "@/components/layout/app-shell";
 
 type Severity = "Critical" | "Warning" | "Info";
 type AlertStatus = "Active" | "Acknowledged" | "Resolved";
@@ -85,6 +86,7 @@ const summaryStats = [
 
 export default function AlertsPage() {
   return (
+    <AppShell>
     <div className="flex flex-col gap-space-5">
       {/* Page header */}
       <div className="flex items-center justify-between">
@@ -157,5 +159,6 @@ export default function AlertsPage() {
         </table>
       </div>
     </div>
+    </AppShell>
   );
 }

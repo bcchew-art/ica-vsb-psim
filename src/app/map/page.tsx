@@ -1,6 +1,7 @@
 "use client";
 
 import { Map, Navigation, Shield, AlertCircle } from "lucide-react";
+import { AppShell } from "@/components/layout/app-shell";
 
 const checkpoints = [
   {
@@ -27,6 +28,7 @@ const checkpoints = [
 
 export default function MapPage() {
   return (
+    <AppShell>
     <div className="flex flex-col gap-space-5 h-full">
       {/* Page header */}
       <div className="flex items-center justify-between">
@@ -122,5 +124,6 @@ export default function MapPage() {
         ))}
       </div>
     </div>
+    </AppShell>
   );
 }

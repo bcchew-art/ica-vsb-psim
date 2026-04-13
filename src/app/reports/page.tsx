@@ -2,6 +2,7 @@
 
 import { FileText, Download, Calendar, Clock, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AppShell } from "@/components/layout/app-shell";
 
 interface ReportType {
   id: string;
@@ -63,6 +64,7 @@ const reportTypes: ReportType[] = [
 
 export default function ReportsPage() {
   return (
+    <AppShell>
     <div className="flex flex-col gap-space-5">
       {/* Page header */}
       <div className="flex items-center justify-between">
@@ -154,5 +156,6 @@ export default function ReportsPage() {
         Report generation and scheduling will be fully enabled in the production release.
       </p>
     </div>
+    </AppShell>
   );
 }
