@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import type { CheckpointLayout, GantryConfig } from "@/lib/checkpoint-layout";
-import { brushedMetal } from "@/lib/3d/materials";
 
 interface Props {
   layout: CheckpointLayout;
@@ -10,8 +9,7 @@ interface Props {
 }
 
 export function Gantry({ layout, config }: Props) {
-  // Beam spans across all lanes along the Z axis:
-  // length = (laneCount - 1) * laneSpacing + laneWidth + margin
+  // Beam spans across all lanes along the Z axis
   const beamLength = useMemo(
     () => (layout.laneCount - 1) * layout.laneSpacing + layout.laneWidth + 4,
     [layout],
@@ -21,7 +19,6 @@ export function Gantry({ layout, config }: Props) {
   const pillarInsetZ = beamLength / 2;
 
   const cams = useMemo(() => {
-    // Evenly space cameras along the beam (one per lane center).
     const totalLaneZ = (layout.laneCount - 1) * layout.laneSpacing;
     const firstZ = -totalLaneZ / 2;
     return Array.from({ length: config.cameraCount }, (_, i) => ({
@@ -31,34 +28,67 @@ export function Gantry({ layout, config }: Props) {
 
   return (
     <group position={[config.worldX, 0, 0]}>
-      {/* Beam along Z axis at height 5.5 */}
+      {/* Main beam — neutral steel gray */}
       <mesh position={[0, beamY, 0]} castShadow>
-        <boxGeometry args={[0.6, 0.4, beamLength]} />
-        <primitive object={brushedMetal()} attach="material" />
+        <boxGeometry args={[0.7, 0.55, beamLength]} />
+        <meshStandardMaterial color="#7a808a" metalness={0.55} roughness={0.5} />
       </mesh>
-      {/* Pillar near side (+Z) */}
+      {/* Secondary lower structural rail */}
+      <mesh position={[0, beamY - 0.6, 0]} castShadow>
+        <boxGeometry args={[0.3, 0.15, beamLength]} />
+        <meshStandardMaterial color="#6a707a" metalness={0.55} roughness={0.55} />
+      </mesh>
+
+      {/* Pillars — steel gray, square cross-section */}
       <mesh position={[0, pillarHeight / 2, pillarInsetZ]} castShadow>
-        <cylinderGeometry args={[0.25, 0.25, pillarHeight, 12]} />
-        <primitive object={brushedMetal()} attach="material" />
+        <boxGeometry args={[0.55, pillarHeight, 0.55]} />
+        <meshStandardMaterial color="#7a808a" metalness={0.55} roughness={0.5} />
       </mesh>
-      {/* Pillar far side (-Z) */}
       <mesh position={[0, pillarHeight / 2, -pillarInsetZ]} castShadow>
-        <cylinderGeometry args={[0.25, 0.25, pillarHeight, 12]} />
-        <primitive object={brushedMetal()} attach="material" />
+        <boxGeometry args={[0.55, pillarHeight, 0.55]} />
+        <meshStandardMaterial color="#7a808a" metalness={0.55} roughness={0.5} />
       </mesh>
-      {/* Camera housings distributed along the beam */}
+      {/* Pillar base plates */}
+      <mesh position={[0, 0.05, pillarInsetZ]}>
+        <boxGeometry args={[0.85, 0.1, 0.85]} />
+        <meshStandardMaterial color="#50565e" metalness={0.45} roughness={0.6} />
+      </mesh>
+      <mesh position={[0, 0.05, -pillarInsetZ]}>
+        <boxGeometry args={[0.85, 0.1, 0.85]} />
+        <meshStandardMaterial color="#50565e" metalness={0.45} roughness={0.6} />
+      </mesh>
+
+      {/* Camera housings */}
       {cams.map((c, i) => (
-        <group key={i} position={[0, beamY - 0.3, c.z]}>
+        <group key={i} position={[0, beamY - 0.42, c.z]}>
+          {/* Housing body — dark gray */}
           <mesh castShadow>
-            <boxGeometry args={[0.25, 0.18, 0.25]} />
-            <meshStandardMaterial color="#0a0a0a" metalness={0.8} roughness={0.3} />
+            <boxGeometry args={[0.6, 0.45, 0.55]} />
+            <meshStandardMaterial color="#3a3e46" metalness={0.65} roughness={0.4} />
           </mesh>
-          <mesh position={[0, 0, 0.14]}>
-            <sphereGeometry args={[0.04, 8, 8]} />
+          {/* Lens barrel */}
+          <mesh position={[-0.35, 0, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+            <cylinderGeometry args={[0.15, 0.18, 0.3, 16]} />
+            <meshStandardMaterial color="#2a2e36" metalness={0.7} roughness={0.35} />
+          </mesh>
+          {/* Lens glass — subtle cyan tint */}
+          <mesh position={[-0.505, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.14, 0.14, 0.02, 16]} />
             <meshStandardMaterial
-              color="#38bdf8"
+              color="#4a5a70"
+              metalness={0.3}
+              roughness={0.15}
               emissive="#38bdf8"
-              emissiveIntensity={1.5}
+              emissiveIntensity={0.35}
+            />
+          </mesh>
+          {/* Small status LED — tiny accent, not neon */}
+          <mesh position={[0.18, 0.12, 0.28]}>
+            <sphereGeometry args={[0.04, 10, 10]} />
+            <meshStandardMaterial
+              color="#22c55e"
+              emissive="#22c55e"
+              emissiveIntensity={0.8}
             />
           </mesh>
         </group>

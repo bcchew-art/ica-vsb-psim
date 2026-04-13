@@ -2,6 +2,8 @@ import { create } from "zustand";
 import type { Equipment, Alert, Checkpoint, ControlMode } from "@/lib/types";
 import { woodlandsEquipment, tuasEquipment, initialAlerts } from "@/lib/mock-data";
 
+export type MapViewMode = "3d" | "2d";
+
 interface PsimStore {
   // Data
   checkpoint: Checkpoint;
@@ -10,6 +12,7 @@ interface PsimStore {
   selectedEquipmentId: string | null;
   controlMode: ControlMode;
   sallyPortLanes: Set<number>;
+  mapViewMode: MapViewMode;
 
   // Actions
   setCheckpoint: (c: Checkpoint) => void;
@@ -23,7 +26,18 @@ interface PsimStore {
   activateSallyPort: (lane: number) => void;
   deactivateSallyPort: (lane: number) => void;
   isSallyPortActive: (lane: number) => boolean;
+  setMapViewMode: (mode: MapViewMode) => void;
+  mapZoom: number;                      // 1.0 = auto-fit; >1 zoomed in; <1 zoomed out
+  setMapZoom: (zoom: number) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  resetZoom: () => void;
 }
+
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 3.5;
+const ZOOM_STEP = 1.2;
+const clampZoom = (z: number) => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z));
 
 function getEquipmentFor(checkpoint: Checkpoint): Equipment[] {
   return checkpoint === "woodlands"
@@ -79,6 +93,13 @@ export const usePsimStore = create<PsimStore>((set, get) => ({
   selectedEquipmentId: null,
   controlMode: "mcp",
   sallyPortLanes: new Set<number>(),
+  mapViewMode: "3d",
+  setMapViewMode: (mapViewMode) => set({ mapViewMode }),
+  mapZoom: 1.0,
+  setMapZoom: (zoom) => set({ mapZoom: clampZoom(zoom) }),
+  zoomIn: () => set((state) => ({ mapZoom: clampZoom(state.mapZoom * ZOOM_STEP) })),
+  zoomOut: () => set((state) => ({ mapZoom: clampZoom(state.mapZoom / ZOOM_STEP) })),
+  resetZoom: () => set({ mapZoom: 1.0 }),
 
   setCheckpoint: (checkpoint) =>
     set(() => ({

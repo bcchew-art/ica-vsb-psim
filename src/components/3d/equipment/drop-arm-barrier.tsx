@@ -3,6 +3,7 @@
 import { useSpring, animated } from "@react-spring/three";
 import type { Equipment } from "@/lib/types";
 import { paintedSteel, chevron, statusEmissiveColor } from "@/lib/3d/materials";
+import { StatusDisc } from "./status-disc";
 
 const AnimatedGroup = animated("group");
 
@@ -12,14 +13,24 @@ interface Props {
   onClick?: () => void;
 }
 
-const POST_HEIGHT = 1.2;
+const POST_HEIGHT = 1.4;
 const ARM_LENGTH_FACTOR = 0.95; // of laneWidth
-const ARM_THICKNESS = 0.12;
+const ARM_THICKNESS = 0.22;
 
 export function DropArmBarrier({ equipment, laneWidth, onClick }: Props) {
-  // Lowered = arm horizontal, blocking (rotation 0).
-  // Raised (cleared) = arm vertical (rotation -PI/2 * 0.95 ≈ 85° up).
-  const isBlocking = equipment.status === "secured" || equipment.status === "transit";
+  // secured = arm horizontal, blocking (rotation 0).
+  // open    = arm vertical (rotation -PI/2 * 0.95 ≈ 85° up), traffic passes.
+  // During transit, match the intended final state via lastAction:
+  // - "Raising" intent comes from the Raise button, which sets status=secured
+  //   (outcome: arm drops to blocking position). For this demo the physical
+  //   direction is tied to the outcome — secured means blocking regardless
+  //   of whether the arm moves up or down.
+  const isBlocking = (() => {
+    if (equipment.status === "transit") {
+      return equipment.lastAction === "Raising";
+    }
+    return equipment.status === "secured";
+  })();
   const targetRotation = isBlocking ? 0 : -Math.PI / 2 * 0.95;
 
   const [spring] = useSpring(
@@ -36,14 +47,15 @@ export function DropArmBarrier({ equipment, laneWidth, onClick }: Props) {
 
   return (
     <group onClick={onClick}>
+      <StatusDisc status={equipment.status} radius={1.15} />
       {/* Mounting post */}
       <mesh position={[0, POST_HEIGHT / 2, postZ]} castShadow>
-        <cylinderGeometry args={[0.1, 0.1, POST_HEIGHT, 16]} />
+        <cylinderGeometry args={[0.17, 0.17, POST_HEIGHT, 16]} />
         <primitive object={paintedSteel()} attach="material" />
       </mesh>
       {/* Base plate */}
-      <mesh position={[0, 0.04, postZ]}>
-        <boxGeometry args={[0.35, 0.08, 0.35]} />
+      <mesh position={[0, 0.05, postZ]}>
+        <boxGeometry args={[0.5, 0.1, 0.5]} />
         <meshStandardMaterial color="#2a2a2a" metalness={0.6} roughness={0.5} />
       </mesh>
       {/* Status indicator on post top */}

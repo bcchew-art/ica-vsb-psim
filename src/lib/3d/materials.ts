@@ -54,9 +54,9 @@ export function chevron(): MeshStandardMaterial {
 export function roadSurface(): MeshStandardMaterial {
   if (_cache.roadSurface) return _cache.roadSurface;
   _cache.roadSurface = new MeshStandardMaterial({
-    color: "#0f1826",
-    metalness: 0.1,
-    roughness: 0.85,
+    color: "#34373e",
+    metalness: 0.15,
+    roughness: 0.92,
   });
   return _cache.roadSurface;
 }
@@ -68,5 +68,15 @@ export function statusEmissiveColor(status: EquipmentStatus): Color {
     case "transit": return new Color("#f59e0b");
     case "fault":   return new Color("#ef4444");
     case "offline": return new Color("#555555");
+  }
+}
+
+export function statusHex(status: EquipmentStatus): string {
+  switch (status) {
+    case "secured": return "#22c55e";
+    case "open":    return "#38bdf8";
+    case "transit": return "#f59e0b";
+    case "fault":   return "#ef4444";
+    case "offline": return "#888888";
   }
 }

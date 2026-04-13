@@ -21,20 +21,28 @@ export interface CheckpointLayout {
   equipmentSlots: EquipmentSlot[];
 }
 
+// Layout note: equipment is co-located with the two overhead gantries.
+//   positionIndex 0 = DAB      -> middle of the road (no gantry overhead)
+//   positionIndex 1 = Bollard  -> UNDER gantry 1 (entry / Malaysia side)
+//   positionIndex 2 = Step     -> UNDER gantry 2 (exit / Singapore side)
+// Note: sally port interlock in psim-store.ts still uses positionIndex 0 and 2
+// as front/rear. With this layout the front interlock is the DAB (middle) and
+// the rear is the step (exit). The bollard (positionIndex 1) is neutral.
+
 export const woodlandsLayout: CheckpointLayout = {
   checkpoint: "woodlands",
   laneCount: 5,
   laneWidth: 3.5,
-  laneSpacing: 4.0,
+  laneSpacing: 5.5,
   roadLength: 40,
   gantries: [
     { worldX: -12, cameraCount: 5 },
     { worldX: 12, cameraCount: 5 },
   ],
   equipmentSlots: [
-    { type: "drop-arm-barrier", positionIndex: 0, worldX: -8 },
-    { type: "auto-bollard", positionIndex: 1, worldX: 0 },
-    { type: "rising-step", positionIndex: 2, worldX: 8 },
+    { type: "drop-arm-barrier", positionIndex: 0, worldX: 0 },
+    { type: "auto-bollard", positionIndex: 1, worldX: -12 },
+    { type: "rising-step", positionIndex: 2, worldX: 12 },
   ],
 };
 
@@ -42,16 +50,16 @@ export const tuasLayout: CheckpointLayout = {
   checkpoint: "tuas",
   laneCount: 4,
   laneWidth: 3.5,
-  laneSpacing: 4.0,
+  laneSpacing: 5.5,
   roadLength: 40,
   gantries: [
     { worldX: -12, cameraCount: 4 },
     { worldX: 12, cameraCount: 4 },
   ],
   equipmentSlots: [
-    { type: "drop-arm-barrier", positionIndex: 0, worldX: -8 },
-    { type: "auto-bollard", positionIndex: 1, worldX: 0 },
-    { type: "rising-step", positionIndex: 2, worldX: 8 },
+    { type: "drop-arm-barrier", positionIndex: 0, worldX: 0 },
+    { type: "auto-bollard", positionIndex: 1, worldX: -12 },
+    { type: "rising-step", positionIndex: 2, worldX: 12 },
   ],
 };
 

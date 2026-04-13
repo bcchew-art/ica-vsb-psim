@@ -28,9 +28,17 @@ export function RightPanel() {
     ? equipment.find((e) => e.id === selectedId) ?? null
     : null;
 
+  // Physical direction is inverted for DABs vs bollards/rising steps:
+  //   Bollard/Step:  Raise (up) = SECURED (blocking)   Lower (down) = OPEN
+  //   DAB:           Raise (up) = OPEN (arm clears)    Lower (down) = SECURED (arm blocks)
+  // The store functions raiseEquipment / lowerEquipment are named by outcome
+  // (secured / open), so for DABs we swap which store fn each physical button calls.
   const handleRaise = () => {
     if (!selected) return;
-    const error = raiseEquipment(selected.id);
+    const isDAB = selected.type === "drop-arm-barrier";
+    const storeFn = isDAB ? lowerEquipment : raiseEquipment;
+    const finalStatus: "secured" | "open" = isDAB ? "open" : "secured";
+    const error = storeFn(selected.id);
     if (error) {
       toast.error(error);
       return;
@@ -42,7 +50,7 @@ export function RightPanel() {
         usePsimStore.setState({
           equipment: usePsimStore.getState().equipment.map((eq) =>
             eq.id === selected.id
-              ? { ...eq, status: "secured" as const, lastAction: "Raised" }
+              ? { ...eq, status: finalStatus, lastAction: "Raised" }
               : eq,
           ),
         });
@@ -53,7 +61,10 @@ export function RightPanel() {
 
   const handleLower = () => {
     if (!selected) return;
-    const error = lowerEquipment(selected.id);
+    const isDAB = selected.type === "drop-arm-barrier";
+    const storeFn = isDAB ? raiseEquipment : lowerEquipment;
+    const finalStatus: "secured" | "open" = isDAB ? "secured" : "open";
+    const error = storeFn(selected.id);
     if (error) {
       toast.error(error);
       return;
@@ -65,7 +76,7 @@ export function RightPanel() {
         usePsimStore.setState({
           equipment: usePsimStore.getState().equipment.map((eq) =>
             eq.id === selected.id
-              ? { ...eq, status: "open" as const, lastAction: "Lowered" }
+              ? { ...eq, status: finalStatus, lastAction: "Lowered" }
               : eq,
           ),
         });
@@ -141,6 +152,24 @@ export function RightPanel() {
                   onLower={handleLower}
                   onEfo={handleEfoClick}
                   disabled={controlMode !== "mcp"}
+                  raiseDisabled={(() => {
+                    // Raise = physical up. For bollard/step that's "secured" outcome;
+                    // for DAB (inverted) that's "open" outcome. Disable when already there.
+                    if (selected.status === "transit") return true;
+                    const isDAB = selected.type === "drop-arm-barrier";
+                    const alreadyRaised = isDAB
+                      ? selected.status === "open"
+                      : selected.status === "secured";
+                    return alreadyRaised;
+                  })()}
+                  lowerDisabled={(() => {
+                    if (selected.status === "transit") return true;
+                    const isDAB = selected.type === "drop-arm-barrier";
+                    const alreadyLowered = isDAB
+                      ? selected.status === "secured"
+                      : selected.status === "open";
+                    return alreadyLowered;
+                  })()}
                 />
               </motion.div>
             ) : (

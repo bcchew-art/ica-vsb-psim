@@ -31,9 +31,19 @@ interface EquipmentCardProps {
   onLower?: () => void;
   onEfo?: () => void;
   disabled?: boolean;
+  raiseDisabled?: boolean;
+  lowerDisabled?: boolean;
 }
 
-export function EquipmentCard({ equipment, onRaise, onLower, onEfo, disabled = false }: EquipmentCardProps) {
+export function EquipmentCard({
+  equipment,
+  onRaise,
+  onLower,
+  onEfo,
+  disabled = false,
+  raiseDisabled = false,
+  lowerDisabled = false,
+}: EquipmentCardProps) {
   const isControllable = !["fixed-bollard", "card-reader"].includes(equipment.type);
 
   return (
@@ -73,10 +83,22 @@ export function EquipmentCard({ equipment, onRaise, onLower, onEfo, disabled = f
       {/* Bottom: Action buttons */}
       {isControllable && (
         <div className="flex gap-space-2">
-          <Button size="sm" variant="secondary" onClick={onRaise} disabled={disabled} className="flex-1">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={onRaise}
+            disabled={disabled || raiseDisabled}
+            className="flex-1"
+          >
             <ArrowUp size={14} className="mr-1" /> Raise
           </Button>
-          <Button size="sm" variant="secondary" onClick={onLower} disabled={disabled} className="flex-1">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={onLower}
+            disabled={disabled || lowerDisabled}
+            className="flex-1"
+          >
             <ArrowDown size={14} className="mr-1" /> Lower
           </Button>
           <Button size="sm" variant="destructive" onClick={onEfo} disabled={disabled}>

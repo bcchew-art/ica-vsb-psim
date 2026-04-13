@@ -5,6 +5,7 @@ import { useSpring, animated } from "@react-spring/three";
 import type { Group } from "three";
 import type { Equipment } from "@/lib/types";
 import { paintedSteel, chevron, statusEmissiveColor } from "@/lib/3d/materials";
+import { StatusDisc } from "./status-disc";
 
 const AnimatedGroup = animated("group");
 
@@ -14,12 +15,21 @@ interface Props {
   onClick?: () => void;
 }
 
-const POST_HEIGHT = 1.0;
-const POST_RADIUS = 0.12;
+const POST_HEIGHT = 1.1;
+const POST_RADIUS = 0.22;
 
 export function BollardArray({ equipment, laneWidth, onClick }: Props) {
-  const isRaised = equipment.status === "secured" || equipment.status === "transit";
-  const targetY = isRaised ? 0 : -POST_HEIGHT;
+  // During transit, the spring target must match the intended FINAL state,
+  // determined by lastAction (Raising/Lowering), not by the transient status.
+  const isRaised = (() => {
+    if (equipment.status === "transit") {
+      return equipment.lastAction === "Raising";
+    }
+    return equipment.status === "secured";
+  })();
+  // When lowered, leave the top ~10cm of the post visible above the road so
+  // operators can still see where the equipment is.
+  const targetY = isRaised ? 0 : -(POST_HEIGHT - 0.1);
 
   const [spring] = useSpring(
     () => ({
@@ -38,6 +48,7 @@ export function BollardArray({ equipment, laneWidth, onClick }: Props) {
 
   return (
     <group ref={rootRef} onClick={onClick}>
+      <StatusDisc status={equipment.status} radius={1.15} />
       {postZ.map((z, i) => (
         <group key={i} position={[0, 0, z]}>
           {/* Base plate */}
