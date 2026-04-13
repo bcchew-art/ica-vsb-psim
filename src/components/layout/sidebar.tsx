@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Map,
@@ -19,7 +21,6 @@ interface NavItem {
   icon: LucideIcon;
   label: string;
   href: string;
-  active?: boolean;
   badge?: number | string | null;
   badgeColor?: "red" | "amber" | "blue";
 }
@@ -32,12 +33,13 @@ interface NavSection {
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const alertsCount = usePsimStore((s) => s.alerts.length);
+  const pathname = usePathname();
 
   const sections: NavSection[] = [
     {
       label: "Overview",
       items: [
-        { icon: LayoutDashboard, label: "Dashboard", href: "/", active: true },
+        { icon: LayoutDashboard, label: "Dashboard", href: "/" },
       ],
     },
     {
@@ -120,14 +122,15 @@ export function Sidebar() {
             <div className="px-space-2 space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
+                const isActive = pathname === item.href;
                 return (
-                  <a
+                  <Link
                     key={item.label}
                     href={item.href}
                     className={cn(
                       "flex items-center gap-space-3 px-space-3 py-space-2 rounded-md transition-colors duration-fast relative",
                       collapsed && "justify-center px-space-2",
-                      item.active
+                      isActive
                         ? "bg-white/15 text-white"
                         : "text-white/60 hover:text-white hover:bg-white/10",
                     )}
@@ -156,7 +159,7 @@ export function Sidebar() {
                         </span>
                       )
                     )}
-                  </a>
+                  </Link>
                 );
               })}
             </div>

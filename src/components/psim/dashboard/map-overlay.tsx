@@ -72,10 +72,10 @@ export function MapOverlay() {
           <button
             type="button"
             onClick={resetZoom}
-            title={`Reset zoom (${Math.round(mapZoom * 100)}%)`}
+            title={`Reset zoom (${Math.round((mapZoom / 1.73) * 100)}%)`}
             className="px-2 py-1.5 text-text-secondary hover:bg-surface border-l border-border transition-colors font-mono text-[10px] min-w-[44px]"
           >
-            {Math.round(mapZoom * 100)}%
+            {Math.round((mapZoom / 1.73) * 100)}%
           </button>
           <button
             type="button"

@@ -95,11 +95,11 @@ export const usePsimStore = create<PsimStore>((set, get) => ({
   sallyPortLanes: new Set<number>(),
   mapViewMode: "3d",
   setMapViewMode: (mapViewMode) => set({ mapViewMode }),
-  mapZoom: 1.0,
+  mapZoom: 1.73,
   setMapZoom: (zoom) => set({ mapZoom: clampZoom(zoom) }),
   zoomIn: () => set((state) => ({ mapZoom: clampZoom(state.mapZoom * ZOOM_STEP) })),
   zoomOut: () => set((state) => ({ mapZoom: clampZoom(state.mapZoom / ZOOM_STEP) })),
-  resetZoom: () => set({ mapZoom: 1.0 }),
+  resetZoom: () => set({ mapZoom: 1.73 }),
 
   setCheckpoint: (checkpoint) =>
     set(() => ({
