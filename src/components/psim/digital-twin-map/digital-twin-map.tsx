@@ -12,32 +12,44 @@ import { CctvPanel } from "@/components/psim/site-overview/cctv-panel";
 
 const BASE_PATH = "/ica-vsb-psim";
 
-// Zone hotspot positions as % of image container
+// Zone hotspot positions as % of image container — matched to engineering drawing
 const ZONE_HOTSPOTS: Array<{
   id: string;
   label: string;
   top: string;
   left: string;
-  width: string;
-  height: string;
+  size: string;
 }> = [
-  { id: "A", label: "WEST ENTRY",     top: "30%", left: "8%",  width: "14%", height: "20%" },
-  { id: "B", label: "SOUTH APPROACH", top: "55%", left: "25%", width: "15%", height: "22%" },
-  { id: "C", label: "EAST GATE",      top: "35%", left: "60%", width: "16%", height: "22%" },
-  { id: "D", label: "NORTH RETURN",   top: "20%", left: "45%", width: "14%", height: "18%" },
-  { id: "E", label: "INTERNAL",       top: "40%", left: "38%", width: "12%", height: "15%" },
-  { id: "F", label: "BRIDGE L3",      top: "60%", left: "10%", width: "18%", height: "22%" },
+  { id: "1",  label: "Zone 1",  top: "38%", left: "38%", size: "10%" },
+  { id: "2",  label: "Zone 2",  top: "30%", left: "70%", size: "12%" },
+  { id: "3",  label: "Zone 3",  top: "42%", left: "28%", size: "9%"  },
+  { id: "4",  label: "Zone 4",  top: "45%", left: "45%", size: "8%"  },
+  { id: "5",  label: "Zone 5",  top: "15%", left: "35%", size: "14%" },
+  { id: "6",  label: "Zone 6",  top: "28%", left: "22%", size: "10%" },
+  { id: "7",  label: "Zone 7",  top: "35%", left: "48%", size: "9%"  },
+  { id: "8",  label: "Zone 8",  top: "62%", left: "65%", size: "12%" },
+  { id: "9",  label: "Zone 9",  top: "38%", left: "62%", size: "10%" },
+  { id: "10", label: "Zone 10", top: "55%", left: "18%", size: "10%" },
+  { id: "11", label: "Zone 11", top: "40%", left: "8%",  size: "12%" },
+  { id: "12", label: "Zone 12", top: "62%", left: "12%", size: "10%" },
+  { id: "13", label: "Zone 13", top: "72%", left: "30%", size: "14%" },
 ];
 
-// Zone C equipment: S/N 9, 10, 11, 12 — positioned on zone image as %
-const ZONE_C_EQUIPMENT_POSITIONS: Record<number, { top: string; left: string }> = {
-  9:  { top: "65%", left: "30%" },
-  10: { top: "45%", left: "55%" },
-  11: { top: "55%", left: "75%" },
-  12: { top: "35%", left: "45%" },
+// Zone 8 equipment positions on the zone image
+const ZONE_8_EQUIPMENT_POSITIONS: Record<string, { top: string; left: string }> = {
+  "road-hump-8":    { top: "25%", left: "30%" },
+  "blocker-9a":     { top: "35%", left: "55%" },
+  "blocker-9b":     { top: "50%", left: "55%" },
+  "blocker-9c":     { top: "65%", left: "55%" },
 };
 
-const ZONE_C_SNS = [9, 10, 11, 12];
+// S/N 8 and 9 equipment (Zone 8 BOQ data)
+const ZONE_8_EQUIPMENT = [
+  { id: "road-hump-8", sn: 8,  mapRef: "8",  label: "Road Hump",      lane: "A",       width: "8.0m",  vehicleType: "Bus",   cctv: false, remarks: "Suggest Road Blocker" },
+  { id: "blocker-9a",  sn: 9,  mapRef: "9E", label: "Blocker 3M",     lane: "Lane A",  width: "3.5m",  vehicleType: "Lorry", cctv: true,  remarks: "SG→CP" },
+  { id: "blocker-9b",  sn: 9,  mapRef: "9E", label: "Blocker 3M",     lane: "Lane B",  width: "3.7m",  vehicleType: "Lorry", cctv: true,  remarks: "SG→CP" },
+  { id: "blocker-9c",  sn: 9,  mapRef: "9E", label: "Blocker 3M",     lane: "Lane C",  width: "3.4m",  vehicleType: "Lorry", cctv: true,  remarks: "SG→CP" },
+];
 
 // ─── STATE TYPE ───────────────────────────────────────────────────────────────
 
@@ -48,12 +60,6 @@ interface MapState {
   activeZone: string | null;
   selectedEquipment: string | null;
 }
-
-// ─── ZONE C EQUIPMENT for zone view ──────────────────────────────────────────
-
-const zoneCLocations = tuasCheckpoint.locations.filter((l) =>
-  ZONE_C_SNS.includes(l.sn)
-);
 
 // ─── ZONE EQUIPMENT COUNTS ────────────────────────────────────────────────────
 
@@ -69,10 +75,12 @@ function MapImage({
   src,
   fallbackLabel,
   alt,
+  filtered = false,
 }: {
   src: string;
   fallbackLabel: string;
   alt: string;
+  filtered?: boolean;
 }) {
   const [errored, setErrored] = useState(false);
 
@@ -103,7 +111,7 @@ function MapImage({
           {fallbackLabel}
         </div>
         <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#2a4a6a" }}>
-          Zoomed view loading...
+          Awaiting image...
         </div>
       </div>
     );
@@ -114,8 +122,42 @@ function MapImage({
       src={src}
       alt={alt}
       onError={() => setErrored(true)}
-      style={{ width: "100%", height: "auto", display: "block" }}
+      style={{
+        width: "100%",
+        height: "auto",
+        display: "block",
+        filter: filtered
+          ? "invert(1) hue-rotate(180deg) brightness(0.65) contrast(1.4) saturate(0.7)"
+          : undefined,
+      }}
     />
+  );
+}
+
+// ─── "COMING SOON" TOOLTIP ZONE ──────────────────────────────────────────────
+
+function TooltipZone({ message }: { message: string }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: "24px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        background: "rgba(5,10,21,0.95)",
+        border: "1px solid #1a2a40",
+        borderRadius: "6px",
+        padding: "8px 16px",
+        fontFamily: "monospace",
+        fontSize: "11px",
+        color: "#4a6a8a",
+        pointerEvents: "none",
+        zIndex: 100,
+        whiteSpace: "nowrap",
+      }}
+    >
+      {message}
+    </div>
   );
 }
 
@@ -128,37 +170,31 @@ export function DigitalTwinMap() {
     selectedEquipment: null,
   });
   const [cctvOpen, setCctvOpen] = useState(false);
+  const [tooltip, setTooltip] = useState<string | null>(null);
 
   function handleZoneClick(zoneId: string) {
-    const zone = ZONE_DEFINITIONS.find((z) => z.id === zoneId);
-    if (zone?.hasZoomView) {
-      setState({ view: "zone", activeZone: zoneId, selectedEquipment: null });
+    if (zoneId === "8") {
+      setState({ view: "zone", activeZone: "8", selectedEquipment: null });
     } else {
+      setTooltip(`Zone ${zoneId} — Coming soon`);
       setState((s) => ({ ...s, activeZone: zoneId, selectedEquipment: null }));
-    }
-  }
-
-  function handleEnterZone() {
-    if (state.activeZone) {
-      const zone = ZONE_DEFINITIONS.find((z) => z.id === state.activeZone);
-      if (zone?.hasZoomView) {
-        setState((s) => ({ ...s, view: "zone", selectedEquipment: null }));
-      }
+      setTimeout(() => setTooltip(null), 2000);
     }
   }
 
   function handleBackToOverview() {
     setState({ view: "overview", activeZone: null, selectedEquipment: null });
+    setTooltip(null);
   }
 
-  function handleEquipmentClick(sn: number) {
+  function handleEquipmentClick(equipId: string) {
     setState((s) => ({
       ...s,
-      selectedEquipment: s.selectedEquipment === String(sn) ? null : String(sn),
+      selectedEquipment: s.selectedEquipment === equipId ? null : equipId,
     }));
   }
 
-  const activeZoneDef = ZONE_DEFINITIONS.find((z) => z.id === state.activeZone);
+  const selectedZone8Equip = ZONE_8_EQUIPMENT.find((e) => e.id === state.selectedEquipment) ?? null;
 
   return (
     <div
@@ -210,8 +246,8 @@ export function DigitalTwinMap() {
                 margin: 0,
               }}
             >
-              {state.view === "zone" && activeZoneDef
-                ? `Zone ${activeZoneDef.id} — ${activeZoneDef.label}`
+              {state.view === "zone"
+                ? "Zone 8 — Lower Entry"
                 : "Digital Twin — Tuas Checkpoint"}
             </h1>
             <p
@@ -224,7 +260,7 @@ export function DigitalTwinMap() {
             >
               {state.view === "zone"
                 ? "Click an equipment marker to inspect"
-                : "Click a zone to explore — Zone C has zoomed view"}
+                : "Click Zone 8 to explore — live demo zone"}
             </p>
           </div>
         </div>
@@ -239,9 +275,7 @@ export function DigitalTwinMap() {
               gap: "6px",
               padding: "6px 12px",
               borderRadius: "6px",
-              border: cctvOpen
-                ? "1px solid #1a4a7a"
-                : "1px solid #1a2a40",
+              border: cctvOpen ? "1px solid #1a4a7a" : "1px solid #1a2a40",
               background: cctvOpen ? "#0d2040" : "transparent",
               color: cctvOpen ? "#e0f0ff" : "#4a6a8a",
               fontFamily: "monospace",
@@ -318,57 +352,74 @@ export function DigitalTwinMap() {
             style={{
               position: "relative",
               width: "100%",
-              aspectRatio: "3/2",
               overflow: "hidden",
-              transition: "opacity 500ms",
+              transition: "opacity 400ms",
+              opacity: 1,
             }}
           >
             {state.view === "overview" ? (
               <>
+                {/* Engineering drawing with CSS digital-twin filter */}
                 <MapImage
-                  src={`${BASE_PATH}/twin-base.png`}
-                  fallbackLabel="Tuas Checkpoint Overview"
-                  alt="Tuas Checkpoint digital twin overview"
+                  src={`${BASE_PATH}/tuas-site-plan.png`}
+                  fallbackLabel="Tuas Checkpoint — Engineering Drawing"
+                  alt="Tuas Checkpoint 3rd Storey Plan — digital twin view"
+                  filtered={true}
                 />
 
-                {/* Zone hotspots */}
+                {/* Zone hotspots — circular, matched to drawing zones */}
                 {ZONE_HOTSPOTS.map((zone) => (
                   <ZoneHotspot
                     key={zone.id}
                     id={zone.id}
                     label={zone.label}
-                    isDemo={zone.id === "C"}
+                    isDemo={zone.id === "8"}
                     equipmentCount={getZoneEquipmentCount(zone.id)}
-                    style={{
-                      top: zone.top,
-                      left: zone.left,
-                      width: zone.width,
-                      height: zone.height,
-                    }}
+                    top={zone.top}
+                    left={zone.left}
+                    size={zone.size}
                     onClick={() => handleZoneClick(zone.id)}
                   />
                 ))}
               </>
             ) : (
               <>
+                {/* Zone 8 DALL-E image — with fallback placeholder */}
                 <MapImage
-                  src={`${BASE_PATH}/twin-zone-c.png`}
-                  fallbackLabel="Zone C — East Gate"
-                  alt="Zone C East Gate zoomed view"
+                  src={`${BASE_PATH}/twin-zone-8.png`}
+                  fallbackLabel="Zone 8 — Awaiting image"
+                  alt="Zone 8 Lower Entry — zoomed view"
+                  filtered={false}
                 />
 
-                {/* Equipment markers */}
-                {zoneCLocations.map((loc) => {
-                  const pos = ZONE_C_EQUIPMENT_POSITIONS[loc.sn];
+                {/* Equipment markers on zone 8 */}
+                {ZONE_8_EQUIPMENT.map((equip) => {
+                  const pos = ZONE_8_EQUIPMENT_POSITIONS[equip.id];
                   if (!pos) return null;
+                  const color = equip.label.includes("Blocker") ? "#00ddff" : "#f59e0b";
                   return (
                     <EquipmentMarker
-                      key={loc.sn}
-                      location={loc}
-                      color={EQUIPMENT_COLORS[loc.type] ?? "#888"}
+                      key={equip.id}
+                      location={{
+                        sn: equip.sn,
+                        mapRef: equip.mapRef,
+                        lanes: [equip.lane],
+                        type: equip.label.includes("Blocker") ? "blocker" : "road-hump",
+                        direction: equip.remarks,
+                        laneWidth: parseFloat(equip.width),
+                        cctv: equip.cctv ? "Y" : "N",
+                        cctvPink: equip.cctv ? 1 : 0,
+                        cctvGreen: 0,
+                        installLocation: "Ground",
+                        vehicleType: equip.vehicleType,
+                        remarks: equip.remarks,
+                        x: 0,
+                        y: 0,
+                      }}
+                      color={color}
                       style={{ top: pos.top, left: pos.left }}
-                      isSelected={state.selectedEquipment === String(loc.sn)}
-                      onClick={() => handleEquipmentClick(loc.sn)}
+                      isSelected={state.selectedEquipment === equip.id}
+                      onClick={() => handleEquipmentClick(equip.id)}
                     />
                   );
                 })}
@@ -379,9 +430,14 @@ export function DigitalTwinMap() {
 
         {/* Detail panel */}
         <DetailPanel
+          view={state.view}
           selectedZone={state.activeZone}
-          selectedEquipment={state.selectedEquipment}
-          onEnterZone={handleEnterZone}
+          selectedEquipment={selectedZone8Equip}
+          onEnterZone={() => {
+            if (state.activeZone === "8") {
+              setState((s) => ({ ...s, view: "zone" }));
+            }
+          }}
         />
       </div>
 
@@ -392,26 +448,23 @@ export function DigitalTwinMap() {
         </div>
       )}
 
+      {/* ── Tooltip ── */}
+      {tooltip && <TooltipZone message={tooltip} />}
+
       {/* ── Global CSS animations ── */}
       <style>{`
         @keyframes zone-pulse {
-          0%, 100% {
-            border-color: rgba(0, 200, 255, 0.2);
-            box-shadow: 0 0 10px rgba(0, 200, 255, 0.05);
-          }
-          50% {
-            border-color: rgba(0, 200, 255, 0.5);
-            box-shadow: 0 0 20px rgba(0, 200, 255, 0.15);
-          }
+          0%, 100% { border-color: rgba(42, 90, 138, 0.3); }
+          50% { border-color: rgba(42, 90, 138, 0.6); }
         }
         @keyframes zone-pulse-demo {
           0%, 100% {
             border-color: rgba(0, 221, 255, 0.4);
-            box-shadow: 0 0 12px rgba(0, 221, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 221, 255, 0.1);
           }
           50% {
             border-color: rgba(0, 221, 255, 0.8);
-            box-shadow: 0 0 24px rgba(0, 221, 255, 0.25);
+            box-shadow: 0 0 30px rgba(0, 221, 255, 0.25);
           }
         }
         @keyframes marker-pulse {
