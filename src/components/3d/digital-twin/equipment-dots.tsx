@@ -9,8 +9,11 @@ import type { EquipmentLocation } from "@/lib/checkpoint-data";
 
 // ── Coordinate conversion ──────────────────────────────────────────────────
 function svgToWorld(x: number, y: number): [number, number, number] {
-  const worldX = (x - 500) * 0.22;
-  const worldZ = (y - 400) * 0.22;
+  // Map SVG 0-1000 coords to image plane space (160x107 centered at origin)
+  // worldX: SVG 0..1000 → -80..+80 (scale 0.16)
+  // worldZ: SVG 0..800 → -48..+48 (scale 0.12, centered on 400)
+  const worldX = (x - 500) * 0.16;
+  const worldZ = (y - 400) * 0.12;
   return [worldX, 0, worldZ];
 }
 
