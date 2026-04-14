@@ -12,7 +12,7 @@ import { CctvPanel } from "@/components/psim/site-overview/cctv-panel";
 
 const BASE_PATH = "/ica-vsb-psim";
 
-// Zone hotspot positions as % of image container — matched to engineering drawing
+// Zone hotspot positions as % of image container — matched to DALL-E isometric overview
 const ZONE_HOTSPOTS: Array<{
   id: string;
   label: string;
@@ -20,32 +20,24 @@ const ZONE_HOTSPOTS: Array<{
   left: string;
   size: string;
 }> = [
-  { id: "1",  label: "Zone 1",  top: "38%", left: "38%", size: "10%" },
-  { id: "2",  label: "Zone 2",  top: "30%", left: "70%", size: "12%" },
-  { id: "3",  label: "Zone 3",  top: "42%", left: "28%", size: "9%"  },
-  { id: "4",  label: "Zone 4",  top: "45%", left: "45%", size: "8%"  },
-  { id: "5",  label: "Zone 5",  top: "15%", left: "35%", size: "14%" },
-  { id: "6",  label: "Zone 6",  top: "28%", left: "22%", size: "10%" },
-  { id: "7",  label: "Zone 7",  top: "35%", left: "48%", size: "9%"  },
-  { id: "8",  label: "Zone 8",  top: "62%", left: "65%", size: "12%" },
-  { id: "9",  label: "Zone 9",  top: "38%", left: "62%", size: "10%" },
-  { id: "10", label: "Zone 10", top: "55%", left: "18%", size: "10%" },
-  { id: "11", label: "Zone 11", top: "40%", left: "8%",  size: "12%" },
-  { id: "12", label: "Zone 12", top: "62%", left: "12%", size: "10%" },
-  { id: "13", label: "Zone 13", top: "72%", left: "30%", size: "14%" },
+  { id: "4B", label: "Zone 4B", top: "25%", left: "18%", size: "11%" },
+  { id: "5",  label: "Zone 5",  top: "35%", left: "35%", size: "11%" },
+  { id: "5B", label: "Zone 5B", top: "22%", left: "42%", size: "10%" },
+  { id: "6A", label: "Zone 6A", top: "45%", left: "52%", size: "11%" },
+  { id: "7",  label: "Zone 7",  top: "30%", left: "62%", size: "10%" },
+  { id: "8",  label: "Zone 8",  top: "42%", left: "75%", size: "12%" },
+  { id: "9A", label: "Zone 9A", top: "60%", left: "48%", size: "11%" },
 ];
 
-// Zone 8 equipment positions on the zone image
+// Zone 8 equipment positions on the zone image — matched to DALL-E close-up
 const ZONE_8_EQUIPMENT_POSITIONS: Record<string, { top: string; left: string }> = {
-  "road-hump-8":    { top: "25%", left: "30%" },
-  "blocker-9a":     { top: "35%", left: "55%" },
-  "blocker-9b":     { top: "50%", left: "55%" },
-  "blocker-9c":     { top: "65%", left: "55%" },
+  "blocker-9a":     { top: "41%", left: "25%" },    // left barrier bar (orange-lit)
+  "blocker-9b":     { top: "46%", left: "50%" },    // center barrier bar
+  "blocker-9c":     { top: "50%", left: "76%" },    // right barrier bar
 };
 
 // S/N 8 and 9 equipment (Zone 8 BOQ data)
 const ZONE_8_EQUIPMENT = [
-  { id: "road-hump-8", sn: 8,  mapRef: "8",  label: "Road Hump",      lane: "A",       width: "8.0m",  vehicleType: "Bus",   cctv: false, remarks: "Suggest Road Blocker" },
   { id: "blocker-9a",  sn: 9,  mapRef: "9E", label: "Blocker 3M",     lane: "Lane A",  width: "3.5m",  vehicleType: "Lorry", cctv: true,  remarks: "SG→CP" },
   { id: "blocker-9b",  sn: 9,  mapRef: "9E", label: "Blocker 3M",     lane: "Lane B",  width: "3.7m",  vehicleType: "Lorry", cctv: true,  remarks: "SG→CP" },
   { id: "blocker-9c",  sn: 9,  mapRef: "9E", label: "Blocker 3M",     lane: "Lane C",  width: "3.4m",  vehicleType: "Lorry", cctv: true,  remarks: "SG→CP" },
@@ -101,7 +93,7 @@ function MapImage({
       >
         <div
           style={{
-            fontFamily: "monospace",
+            fontFamily: "var(--font-mono), monospace",
             fontSize: "13px",
             color: "#4a6a8a",
             textTransform: "uppercase",
@@ -110,7 +102,7 @@ function MapImage({
         >
           {fallbackLabel}
         </div>
-        <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#2a4a6a" }}>
+        <div style={{ fontFamily: "var(--font-mono), monospace", fontSize: "10px", color: "#2a4a6a" }}>
           Awaiting image...
         </div>
       </div>
@@ -124,7 +116,8 @@ function MapImage({
       onError={() => setErrored(true)}
       style={{
         width: "100%",
-        height: "auto",
+        height: "100%",
+        objectFit: "cover",
         display: "block",
         filter: filtered
           ? "invert(1) hue-rotate(180deg) brightness(0.65) contrast(1.4) saturate(0.7)"
@@ -148,7 +141,7 @@ function TooltipZone({ message }: { message: string }) {
         border: "1px solid #1a2a40",
         borderRadius: "6px",
         padding: "8px 16px",
-        fontFamily: "monospace",
+        fontFamily: "var(--font-mono), monospace",
         fontSize: "11px",
         color: "#4a6a8a",
         pointerEvents: "none",
@@ -227,7 +220,7 @@ export function DigitalTwinMap() {
                 background: "rgba(0,200,255,0.08)",
                 border: "1px solid rgba(0,200,255,0.25)",
                 color: "#00ccff",
-                fontFamily: "monospace",
+                fontFamily: "var(--font-mono), monospace",
                 fontSize: "11px",
                 cursor: "pointer",
                 transition: "all 150ms",
@@ -242,7 +235,7 @@ export function DigitalTwinMap() {
               style={{
                 fontSize: "18px",
                 fontWeight: 700,
-                color: "#e0f0ff",
+                color: "#1a2a40",
                 margin: 0,
               }}
             >
@@ -255,7 +248,7 @@ export function DigitalTwinMap() {
                 fontSize: "11px",
                 color: "#4a6a8a",
                 margin: "2px 0 0",
-                fontFamily: "monospace",
+                fontFamily: "var(--font-mono), monospace",
               }}
             >
               {state.view === "zone"
@@ -278,7 +271,7 @@ export function DigitalTwinMap() {
               border: cctvOpen ? "1px solid #1a4a7a" : "1px solid #1a2a40",
               background: cctvOpen ? "#0d2040" : "transparent",
               color: cctvOpen ? "#e0f0ff" : "#4a6a8a",
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono), monospace",
               fontSize: "11px",
               cursor: "pointer",
               transition: "all 150ms",
@@ -313,7 +306,7 @@ export function DigitalTwinMap() {
             />
             <span
               style={{
-                fontFamily: "monospace",
+                fontFamily: "var(--font-mono), monospace",
                 fontSize: "10px",
                 color: "#4a6a8a",
                 letterSpacing: "0.1em",
@@ -331,20 +324,21 @@ export function DigitalTwinMap() {
           flex: 1,
           minHeight: "500px",
           display: "flex",
+          flexDirection: "row",
           borderRadius: "10px",
           overflow: "hidden",
           border: "1px solid #1a2a40",
+          background: "#050a15",
         }}
       >
         {/* Map view */}
         <div
           style={{
-            flex: 1,
+            flex: "1 1 0%",
+            minWidth: 0,
             background: "#050a15",
             position: "relative",
             overflow: "hidden",
-            display: "flex",
-            alignItems: "flex-start",
           }}
         >
           {/* Image container — relative for absolute hotspot positioning */}
@@ -352,19 +346,18 @@ export function DigitalTwinMap() {
             style={{
               position: "relative",
               width: "100%",
+              height: "100%",
               overflow: "hidden",
-              transition: "opacity 400ms",
-              opacity: 1,
             }}
           >
             {state.view === "overview" ? (
               <>
-                {/* Engineering drawing with CSS digital-twin filter */}
+                {/* DALL-E digital twin overview */}
                 <MapImage
-                  src={`${BASE_PATH}/tuas-site-plan.png`}
-                  fallbackLabel="Tuas Checkpoint — Engineering Drawing"
-                  alt="Tuas Checkpoint 3rd Storey Plan — digital twin view"
-                  filtered={true}
+                  src={`${BASE_PATH}/tuas-overview.png`}
+                  fallbackLabel="Tuas Checkpoint — Digital Twin Overview"
+                  alt="Tuas Checkpoint — digital twin overview"
+                  filtered={false}
                 />
 
                 {/* Zone hotspots — circular, matched to drawing zones */}
@@ -459,12 +452,19 @@ export function DigitalTwinMap() {
         }
         @keyframes zone-pulse-demo {
           0%, 100% {
-            border-color: rgba(0, 221, 255, 0.4);
-            box-shadow: 0 0 15px rgba(0, 221, 255, 0.1);
+            border-color: rgba(0, 221, 255, 0.5);
+            box-shadow:
+              0 0 12px rgba(0, 221, 255, 0.3),
+              0 0 30px rgba(0, 221, 255, 0.15),
+              inset 0 0 10px rgba(0, 221, 255, 0.08);
           }
           50% {
-            border-color: rgba(0, 221, 255, 0.8);
-            box-shadow: 0 0 30px rgba(0, 221, 255, 0.25);
+            border-color: rgba(0, 221, 255, 1);
+            box-shadow:
+              0 0 20px rgba(0, 221, 255, 0.7),
+              0 0 50px rgba(0, 221, 255, 0.4),
+              0 0 80px rgba(0, 221, 255, 0.15),
+              inset 0 0 20px rgba(0, 221, 255, 0.15);
           }
         }
         @keyframes marker-pulse {

@@ -17,19 +17,13 @@ interface ZoneDef {
 }
 
 export const ZONE_DEFINITIONS: ZoneDef[] = [
-  { id: "1",  label: "Zone 1",  description: "Central compound — primary equipment cluster near main building", snRange: [3, 7],           hasZoomView: false },
-  { id: "2",  label: "Zone 2",  description: "East perimeter — CP→SG egress with blocker arrays",              snRange: [1, 2],           hasZoomView: false },
-  { id: "3",  label: "Zone 3",  description: "Center-left approach — mixed vehicle entry lanes",               snRange: [4, 5],           hasZoomView: false },
-  { id: "4",  label: "Zone 4",  description: "Central vehicle processing — car and motorcycle lanes",          snRange: [6],              hasZoomView: false },
-  { id: "5",  label: "Zone 5",  description: "North perimeter — heavy vehicle approach from JB",               snRange: [13, 14, 15],     hasZoomView: false },
-  { id: "6",  label: "Zone 6",  description: "Upper-left gate complex — west entry processing",                snRange: [16, 17],         hasZoomView: false },
-  { id: "7",  label: "Zone 7",  description: "Center-right — internal compound road junction",                 snRange: [18, 19],         hasZoomView: false },
-  { id: "8",  label: "Zone 8",  description: "Lower entry — road hump S/N 8 (bus) and blocker array S/N 9 (lorry, 3 lanes)", snRange: [8, 9], hasZoomView: true },
-  { id: "9",  label: "Zone 9",  description: "Right-center — SG-side egress with K12 bollards",               snRange: [10, 11],         hasZoomView: false },
-  { id: "10", label: "Zone 10", description: "Lower-left — west perimeter VSB deployment",                     snRange: [12],             hasZoomView: false },
-  { id: "11", label: "Zone 11", description: "Far west entry — JB-side approach, lorry & car",                snRange: [20, 21, 22],     hasZoomView: false },
-  { id: "12", label: "Zone 12", description: "Bottom-left compound — bridge level 3 approaches",               snRange: [23, 24, 25],     hasZoomView: false },
-  { id: "13", label: "Zone 13", description: "Bridge area — elevated VSB equipment above gantries",            snRange: [26, 27, 28, 29, 30, 31, 32], hasZoomView: false },
+  { id: "4B", label: "Zone 4B", description: "Upper-left approach — JB-side entry lanes, mixed vehicle types",           snRange: [3, 4, 5, 6],     hasZoomView: false },
+  { id: "5",  label: "Zone 5",  description: "Central compound — primary equipment cluster near main building",           snRange: [7, 13, 14],      hasZoomView: false },
+  { id: "5B", label: "Zone 5B", description: "North perimeter — heavy vehicle approach from JB with blocker arrays",     snRange: [15, 16, 17],     hasZoomView: false },
+  { id: "6A", label: "Zone 6A", description: "Mid-right gate complex — SG-side egress and entry processing",             snRange: [1, 2, 18, 19],   hasZoomView: false },
+  { id: "7",  label: "Zone 7",  description: "Center-right — internal compound road junction and K12 bollards",          snRange: [10, 11, 20, 21], hasZoomView: false },
+  { id: "8",  label: "Zone 8",  description: "Lower entry — blocker array S/N 9 (lorry, 3 lanes, SG→CP direction)", snRange: [9],     hasZoomView: true  },
+  { id: "9A", label: "Zone 9A", description: "Bottom approach — bridge-level VSB equipment above gantries, lorry lanes", snRange: [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], hasZoomView: false },
 ];
 
 // ─── ZONE 8 EQUIPMENT TYPE (for detail view) ──────────────────────────────────
@@ -78,7 +72,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
     >
       <span
         style={{
-          fontFamily: "monospace",
+          fontFamily: "var(--font-mono), monospace",
           fontSize: "10px",
           color: "#4a6a8a",
           textTransform: "uppercase",
@@ -90,7 +84,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
       </span>
       <span
         style={{
-          fontFamily: "monospace",
+          fontFamily: "var(--font-mono), monospace",
           fontSize: "11px",
           color: "#a0b8d0",
           textAlign: "right",
@@ -118,7 +112,7 @@ function EmptyState() {
       <div>
         <div
           style={{
-            fontFamily: "monospace",
+            fontFamily: "var(--font-mono), monospace",
             fontSize: "9px",
             color: "#4a6a8a",
             textTransform: "uppercase",
@@ -131,7 +125,7 @@ function EmptyState() {
         <div style={{ fontSize: "14px", fontWeight: 700, color: "#e0f0ff" }}>
           Tuas Checkpoint
         </div>
-        <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#4a6a8a", marginTop: "2px" }}>
+        <div style={{ fontFamily: "var(--font-mono), monospace", fontSize: "10px", color: "#4a6a8a", marginTop: "2px" }}>
           VSB Equipment Deployment
         </div>
       </div>
@@ -147,7 +141,7 @@ function EmptyState() {
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "monospace" }}>13</div>
+          <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "var(--font-mono), monospace" }}>7</div>
           <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px" }}>Zones</div>
         </div>
         <div
@@ -160,7 +154,7 @@ function EmptyState() {
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "monospace" }}>32</div>
+          <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "var(--font-mono), monospace" }}>32</div>
           <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px" }}>Locations</div>
         </div>
         <div
@@ -173,7 +167,7 @@ function EmptyState() {
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "monospace" }}>{totalCctv}</div>
+          <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "var(--font-mono), monospace" }}>{totalCctv}</div>
           <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px" }}>CCTV</div>
         </div>
       </div>
@@ -181,7 +175,7 @@ function EmptyState() {
       <div>
         <div
           style={{
-            fontFamily: "monospace",
+            fontFamily: "var(--font-mono), monospace",
             fontSize: "9px",
             color: "#4a6a8a",
             textTransform: "uppercase",
@@ -204,11 +198,11 @@ function EmptyState() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <Dot color={EQUIPMENT_COLORS[type as keyof typeof EQUIPMENT_COLORS] ?? "#888"} />
-                <span style={{ fontFamily: "monospace", fontSize: "10px", color: "#8899b0" }}>
+                <span style={{ fontFamily: "var(--font-mono), monospace", fontSize: "10px", color: "#8899b0" }}>
                   {EQUIPMENT_LABELS[type as keyof typeof EQUIPMENT_LABELS] ?? type}
                 </span>
               </div>
-              <span style={{ fontFamily: "monospace", fontSize: "11px", color: "#a0b8d0", fontWeight: 600 }}>
+              <span style={{ fontFamily: "var(--font-mono), monospace", fontSize: "11px", color: "#a0b8d0", fontWeight: 600 }}>
                 {count}
               </span>
             </div>
@@ -226,7 +220,7 @@ function EmptyState() {
       >
         <div
           style={{
-            fontFamily: "monospace",
+            fontFamily: "var(--font-mono), monospace",
             fontSize: "9px",
             color: "#4a6a8a",
             textTransform: "uppercase",
@@ -265,7 +259,7 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
           <div
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono), monospace",
               fontSize: "9px",
               color: "#00ccff",
               textTransform: "uppercase",
@@ -281,7 +275,7 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
           {zone.hasZoomView && (
             <div
               style={{
-                fontFamily: "monospace",
+                fontFamily: "var(--font-mono), monospace",
                 fontSize: "9px",
                 color: "#00ddff",
                 textTransform: "uppercase",
@@ -313,7 +307,7 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "18px", fontWeight: 700, color: "#00ccff", fontFamily: "monospace" }}>
+          <div style={{ fontSize: "18px", fontWeight: 700, color: "#00ccff", fontFamily: "var(--font-mono), monospace" }}>
             {zoneLocs.length}
           </div>
           <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.06em" }}>
@@ -330,7 +324,7 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "18px", fontWeight: 700, color: "#ec4899", fontFamily: "monospace" }}>
+          <div style={{ fontSize: "18px", fontWeight: 700, color: "#ec4899", fontFamily: "var(--font-mono), monospace" }}>
             {totalPink}
           </div>
           <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.06em" }}>
@@ -347,7 +341,7 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: "18px", fontWeight: 700, color: "#22c55e", fontFamily: "monospace" }}>
+          <div style={{ fontSize: "18px", fontWeight: 700, color: "#22c55e", fontFamily: "var(--font-mono), monospace" }}>
             {totalGreen}
           </div>
           <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.06em" }}>
@@ -361,7 +355,7 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
         <div>
           <div
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono), monospace",
               fontSize: "9px",
               color: "#4a6a8a",
               textTransform: "uppercase",
@@ -379,11 +373,11 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                   <Dot color={EQUIPMENT_COLORS[type as keyof typeof EQUIPMENT_COLORS] ?? "#888"} />
-                  <span style={{ fontFamily: "monospace", fontSize: "10px", color: "#8899b0" }}>
+                  <span style={{ fontFamily: "var(--font-mono), monospace", fontSize: "10px", color: "#8899b0" }}>
                     {EQUIPMENT_LABELS[type as keyof typeof EQUIPMENT_LABELS] ?? type}
                   </span>
                 </div>
-                <span style={{ fontFamily: "monospace", fontSize: "11px", color: "#a0b8d0", fontWeight: 600 }}>
+                <span style={{ fontFamily: "var(--font-mono), monospace", fontSize: "11px", color: "#a0b8d0", fontWeight: 600 }}>
                   {count}
                 </span>
               </div>
@@ -400,7 +394,7 @@ function ZonePanel({ zoneId, onEnterZone }: { zoneId: string; onEnterZone: () =>
           width: "100%",
           padding: "9px",
           borderRadius: "6px",
-          fontFamily: "monospace",
+          fontFamily: "var(--font-mono), monospace",
           fontSize: "11px",
           textTransform: "uppercase",
           letterSpacing: "0.1em",
@@ -433,7 +427,7 @@ function Zone8EquipPanel({ equip }: { equip: Zone8Equipment }) {
           <Dot color={color} size={12} />
           <span
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono), monospace",
               fontSize: "9px",
               color: color,
               textTransform: "uppercase",
@@ -446,7 +440,7 @@ function Zone8EquipPanel({ equip }: { equip: Zone8Equipment }) {
         <div style={{ fontSize: "15px", fontWeight: 700, color: "#e0f0ff" }}>
           Map {equip.mapRef} — {equip.lane}
         </div>
-        <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#5a7a9a", marginTop: "2px" }}>
+        <div style={{ fontFamily: "var(--font-mono), monospace", fontSize: "10px", color: "#5a7a9a", marginTop: "2px" }}>
           S/N {equip.sn}
         </div>
       </div>
@@ -469,7 +463,7 @@ function Zone8EquipPanel({ equip }: { equip: Zone8Equipment }) {
         >
           <div
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono), monospace",
               fontSize: "9px",
               color: "#4a6a8a",
               textTransform: "uppercase",
@@ -496,7 +490,7 @@ function Zone8EquipPanel({ equip }: { equip: Zone8Equipment }) {
         >
           <div
             style={{
-              fontFamily: "monospace",
+              fontFamily: "var(--font-mono), monospace",
               fontSize: "9px",
               color: "#4a6a8a",
               textTransform: "uppercase",
@@ -507,7 +501,7 @@ function Zone8EquipPanel({ equip }: { equip: Zone8Equipment }) {
             Remark
           </div>
           <div style={{ fontSize: "10px", color: "#6a8aaa", lineHeight: 1.5 }}>
-            Suggest Road Blocker upgrade · 8m wide bus lane · currently road hump classification
+            SG→CP direction · Lorry vehicle class · 3M blocker specification
           </div>
         </div>
       )}
@@ -528,13 +522,15 @@ export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone
   return (
     <div
       style={{
-        width: "280px",
+        width: "320px",
+        minWidth: "320px",
         flexShrink: 0,
         background: "#0a1020",
         borderLeft: "1px solid #1a2a40",
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
+        height: "100%",
       }}
     >
       {/* Panel header */}
@@ -548,7 +544,7 @@ export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone
       >
         <div
           style={{
-            fontFamily: "monospace",
+            fontFamily: "var(--font-mono), monospace",
             fontSize: "9px",
             color: "#4a6a8a",
             textTransform: "uppercase",
@@ -567,7 +563,7 @@ export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone
           <div style={{ padding: "16px" }}>
             <div
               style={{
-                fontFamily: "monospace",
+                fontFamily: "var(--font-mono), monospace",
                 fontSize: "10px",
                 color: "#4a6a8a",
                 lineHeight: 1.6,
@@ -577,7 +573,6 @@ export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone
             </div>
             <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
               {[
-                { label: "Road Hump", color: "#f59e0b", desc: "Map 8 · Bus lane · 8.0m" },
                 { label: "Blocker 3M Lane A", color: "#00ddff", desc: "Map 9E · Lorry · 3.5m" },
                 { label: "Blocker 3M Lane B", color: "#00ddff", desc: "Map 9E · Lorry · 3.7m" },
                 { label: "Blocker 3M Lane C", color: "#00ddff", desc: "Map 9E · Lorry · 3.4m" },
@@ -596,10 +591,10 @@ export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone
                 >
                   <Dot color={item.color} size={8} />
                   <div>
-                    <div style={{ fontFamily: "monospace", fontSize: "10px", color: "#a0b8d0" }}>
+                    <div style={{ fontFamily: "var(--font-mono), monospace", fontSize: "10px", color: "#a0b8d0" }}>
                       {item.label}
                     </div>
-                    <div style={{ fontFamily: "monospace", fontSize: "9px", color: "#4a6a8a", marginTop: "1px" }}>
+                    <div style={{ fontFamily: "var(--font-mono), monospace", fontSize: "9px", color: "#4a6a8a", marginTop: "1px" }}>
                       {item.desc}
                     </div>
                   </div>
