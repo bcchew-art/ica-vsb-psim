@@ -45,12 +45,12 @@ export const tuasBarriers: BarrierLocation[] = [
   { id: "T-4B-3A", checkpoint: "tuas", zone: "4B", mapRef: "3",   lane: "A",   type: "Road Hump", x: 25.5, y: 34.0 },
 
   // Zone 5 (S/N 4, 5, 6, 7) — 6 barriers
-  { id: "T-5-4A",  checkpoint: "tuas", zone: "5",  mapRef: "5E",  lane: "A",   type: "Blocker",   x: 26.5, y: 33.0 },
-  { id: "T-5-4B",  checkpoint: "tuas", zone: "5",  mapRef: "5E",  lane: "B",   type: "Blocker",   x: 28.5, y: 34.5 },
-  { id: "T-5-4C",  checkpoint: "tuas", zone: "5",  mapRef: "5E",  lane: "C",   type: "Blocker",   x: 30.5, y: 36.0 },
-  { id: "T-5-5A",  checkpoint: "tuas", zone: "5",  mapRef: "6E",  lane: "A",   type: "Blocker",   x: 27.5, y: 38.0 },
-  { id: "T-5-6A",  checkpoint: "tuas", zone: "5",  mapRef: "7",   lane: "A",   type: "Road Hump", x: 31.0, y: 37.5 },
-  { id: "T-5-7A",  checkpoint: "tuas", zone: "5",  mapRef: "4",   lane: "A",   type: "Road Hump", x: 25.5, y: 35.5 },
+  { id: "T-5-4A",  checkpoint: "tuas", zone: "5",  mapRef: "5E",  lane: "A",   type: "Blocker",   x: 30.5, y: 33.0 },
+  { id: "T-5-4B",  checkpoint: "tuas", zone: "5",  mapRef: "5E",  lane: "B",   type: "Blocker",   x: 32.5, y: 34.5 },
+  { id: "T-5-4C",  checkpoint: "tuas", zone: "5",  mapRef: "5E",  lane: "C",   type: "Blocker",   x: 34.5, y: 36.0 },
+  { id: "T-5-5A",  checkpoint: "tuas", zone: "5",  mapRef: "6E",  lane: "A",   type: "Blocker",   x: 31.5, y: 38.0 },
+  { id: "T-5-6A",  checkpoint: "tuas", zone: "5",  mapRef: "7",   lane: "A",   type: "Road Hump", x: 35.0, y: 37.5 },
+  { id: "T-5-7A",  checkpoint: "tuas", zone: "5",  mapRef: "4",   lane: "A",   type: "Road Hump", x: 29.5, y: 35.5 },
 
   // Zone 5B (S/N 8) — 1 barrier
   { id: "T-5B-8A", checkpoint: "tuas", zone: "5B", mapRef: "8",   lane: "A",   type: "Road Hump", x: 42.0, y: 22.0 },
@@ -67,10 +67,10 @@ export const tuasBarriers: BarrierLocation[] = [
   { id: "T-7-13A", checkpoint: "tuas", zone: "7",  mapRef: "15A", lane: "A",   type: "Sliding Bollard", x: 60.5, y: 32.0 },
 
   // Zone 8 (S/N 14, 15, 16) — 4 barriers (separate from drill-down markers)
-  { id: "T-8-14A", checkpoint: "tuas", zone: "8",  mapRef: "37",  lane: "A",   type: "Blocker",   x: 72.5, y: 40.0 },
-  { id: "T-8-14B", checkpoint: "tuas", zone: "8",  mapRef: "37",  lane: "B",   type: "Blocker",   x: 74.5, y: 41.0 },
-  { id: "T-8-15A", checkpoint: "tuas", zone: "8",  mapRef: "16A", lane: "A",   type: "Blocker",   x: 76.5, y: 42.5 },
-  { id: "T-8-16A", checkpoint: "tuas", zone: "8",  mapRef: "38",  lane: "A",   type: "Blocker",   x: 78.0, y: 44.0 },
+  { id: "T-8-14A", checkpoint: "tuas", zone: "8",  mapRef: "37",  lane: "A",   type: "Blocker",   x: 67.5, y: 40.0 },
+  { id: "T-8-14B", checkpoint: "tuas", zone: "8",  mapRef: "37",  lane: "B",   type: "Blocker",   x: 69.5, y: 41.0 },
+  { id: "T-8-15A", checkpoint: "tuas", zone: "8",  mapRef: "16A", lane: "A",   type: "Blocker",   x: 71.5, y: 42.5 },
+  { id: "T-8-16A", checkpoint: "tuas", zone: "8",  mapRef: "38",  lane: "A",   type: "Blocker",   x: 73.0, y: 44.0 },
 
   // Zone 9A (S/N 17, 18, 19, 20, 25, 27) — 9 barriers (bridge/within-building cluster)
   { id: "T-9A-17A", checkpoint: "tuas", zone: "9A", mapRef: "25",       lane: "A",   type: "Road Hump",       x: 36.0, y: 57.0 },

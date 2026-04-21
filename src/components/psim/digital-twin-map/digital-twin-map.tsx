@@ -30,11 +30,11 @@ interface ZoneHotspotDef {
 
 const TUAS_ZONE_HOTSPOTS: ZoneHotspotDef[] = [
   { id: "4B", label: "Zone 4B", top: "30%", left: "24%", size: "11%" },
-  { id: "5",  label: "Zone 5",  top: "35%", left: "29%", size: "11%" },
+  { id: "5",  label: "Zone 5",  top: "35%", left: "33%", size: "11%" },
   { id: "5B", label: "Zone 5B", top: "22%", left: "42%", size: "10%" },
   { id: "6A", label: "Zone 6A", top: "45%", left: "46%", size: "11%" },
   { id: "7",  label: "Zone 7",  top: "30%", left: "62%", size: "10%" },
-  { id: "8",  label: "Zone 8",  top: "42%", left: "75%", size: "12%" },
+  { id: "8",  label: "Zone 8",  top: "42%", left: "70%", size: "12%" },
   { id: "9A", label: "Zone 9A", top: "60%", left: "40%", size: "11%" },
 ];
 
