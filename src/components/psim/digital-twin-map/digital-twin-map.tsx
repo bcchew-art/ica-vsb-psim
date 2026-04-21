@@ -5,8 +5,15 @@ import { Camera, ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
 import { tuasCheckpoint, EQUIPMENT_COLORS } from "@/lib/checkpoint-data";
 import { ZoneHotspot } from "./zone-hotspot";
 import { EquipmentMarker } from "./equipment-marker";
+import { BarrierMarker } from "./barrier-marker";
 import { DetailPanel, ZONE_DEFINITIONS } from "./detail-panel";
 import { CctvPanel } from "@/components/psim/site-overview/cctv-panel";
+import {
+  BARRIER_COLORS,
+  tuasBarriers,
+  woodlandsBarriers,
+  type BarrierType,
+} from "@/lib/barrier-locations";
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -167,6 +174,71 @@ function TooltipZone({ message }: { message: string }) {
       }}
     >
       {message}
+    </div>
+  );
+}
+
+// ─── BARRIER LEGEND (always-visible) ──────────────────────────────────────────
+
+function BarrierLegend() {
+  const types: BarrierType[] = [
+    "Blocker",
+    "Road Hump",
+    "K12 Drop Arm",
+    "Auto Bollard",
+    "Sliding Bollard",
+  ];
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: "12px",
+        right: "12px",
+        zIndex: 40,
+        width: "180px",
+        padding: "10px 12px",
+        borderRadius: "6px",
+        background: "rgba(5,10,21,0.88)",
+        border: "1px solid #1a2a40",
+        backdropFilter: "blur(6px)",
+        fontFamily: "var(--font-mono), monospace",
+        pointerEvents: "none",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "9px",
+          color: "#4a6a8a",
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          marginBottom: "6px",
+        }}
+      >
+        VSB Equipment
+      </div>
+      {types.map((t) => (
+        <div
+          key={t}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "2px 0",
+          }}
+        >
+          <span
+            style={{
+              width: "9px",
+              height: "9px",
+              borderRadius: "50%",
+              background: BARRIER_COLORS[t],
+              boxShadow: `0 0 5px ${BARRIER_COLORS[t]}CC`,
+              flexShrink: 0,
+            }}
+          />
+          <span style={{ fontSize: "10px", color: "#c0d4e8" }}>{t}</span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -461,6 +533,14 @@ export function DigitalTwinMap() {
                     onClick={() => handleZoneClick(zone.id)}
                   />
                 ))}
+
+                {/* Barrier location dots — always visible on overview */}
+                {(checkpoint === "woodlands" ? woodlandsBarriers : tuasBarriers).map((b) => (
+                  <BarrierMarker key={b.id} barrier={b} />
+                ))}
+
+                {/* Equipment legend — always visible on overview */}
+                <BarrierLegend />
               </>
             ) : (
               <>
