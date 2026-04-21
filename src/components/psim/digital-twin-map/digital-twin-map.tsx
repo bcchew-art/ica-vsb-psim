@@ -139,9 +139,11 @@ function MapImage({
       alt={alt}
       onError={() => setErrored(true)}
       style={{
+        position: "absolute",
+        inset: 0,
         width: "100%",
         height: "100%",
-        objectFit: "cover",
+        objectFit: "fill",
         display: "block",
         filter: filtered
           ? "invert(1) hue-rotate(180deg) brightness(0.65) contrast(1.4) saturate(0.7)"
@@ -486,14 +488,26 @@ export function DigitalTwinMap() {
             background: "#050a15",
             position: "relative",
             overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {/* Image container — relative for absolute hotspot positioning */}
+          {/* Equipment legend — pinned to outer map cell so it stays visible regardless of letterbox */}
+          {state.view === "overview" && <BarrierLegend />}
+
+          {/* Aspect-ratio-locked image wrapper — 3:2 matches native image (1536x1024).
+              All markers (%) are positioned inside this wrapper so they track image pixels
+              1:1 at every viewport width. */}
           <div
             style={{
               position: "relative",
               width: "100%",
-              height: "100%",
+              maxHeight: "100%",
+              aspectRatio: "3 / 2",
+              // When the container is wider-than-3:2, this wrapper is height-bound; cap by max-width via the aspect ratio.
+              // The flex centering on the parent keeps it visually centered.
+              margin: "auto",
               overflow: "hidden",
             }}
           >
@@ -538,9 +552,6 @@ export function DigitalTwinMap() {
                 {(checkpoint === "woodlands" ? woodlandsBarriers : tuasBarriers).map((b) => (
                   <BarrierMarker key={b.id} barrier={b} />
                 ))}
-
-                {/* Equipment legend — always visible on overview */}
-                <BarrierLegend />
               </>
             ) : (
               <>
