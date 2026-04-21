@@ -98,7 +98,103 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 // ─── EMPTY STATE (overview) ───────────────────────────────────────────────────
 
-function EmptyState() {
+function EmptyState({ checkpoint }: { checkpoint: "tuas" | "woodlands" }) {
+  // Woodlands summary (static BOQ data — 28 locations, 109 CCTV, 8 zones)
+  if (checkpoint === "woodlands") {
+    return (
+      <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div>
+          <div
+            style={{
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: "9px",
+              color: "#4a6a8a",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              marginBottom: "6px",
+            }}
+          >
+            Checkpoint
+          </div>
+          <div style={{ fontSize: "14px", fontWeight: 700, color: "#e0f0ff" }}>
+            Woodlands Checkpoint
+          </div>
+          <div style={{ fontFamily: "var(--font-mono), monospace", fontSize: "10px", color: "#4a6a8a", marginTop: "2px" }}>
+            VSB Equipment Deployment
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "8px" }}>
+          <div
+            style={{
+              flex: 1,
+              background: "#0a1828",
+              border: "1px solid #1a2a40",
+              borderRadius: "6px",
+              padding: "10px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "var(--font-mono), monospace" }}>8</div>
+            <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px" }}>Zones</div>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              background: "#0a1828",
+              border: "1px solid #1a2a40",
+              borderRadius: "6px",
+              padding: "10px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "var(--font-mono), monospace" }}>28</div>
+            <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px" }}>Locations</div>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              background: "#0a1828",
+              border: "1px solid #1a2a40",
+              borderRadius: "6px",
+              padding: "10px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: "22px", fontWeight: 700, color: "#00ccff", fontFamily: "var(--font-mono), monospace" }}>109</div>
+            <div style={{ fontSize: "9px", color: "#4a6a8a", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "2px" }}>CCTV</div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            padding: "10px",
+            background: "rgba(0,221,255,0.04)",
+            border: "1px solid rgba(0,221,255,0.12)",
+            borderRadius: "6px",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-mono), monospace",
+              fontSize: "9px",
+              color: "#4a6a8a",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              marginBottom: "4px",
+            }}
+          >
+            Status
+          </div>
+          <div style={{ fontSize: "10px", color: "#6a8aaa", lineHeight: 1.5 }}>
+            Hover any <span style={{ color: "#00ddff" }}>W-zone</span> hotspot to preview. Drill-down view available in v2 — zone names (W1-W8) pending confirmation.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tuas summary (existing)
   const locs = tuasCheckpoint.locations;
   const totalCctv = locs.reduce((s, l) => s + l.cctvPink + l.cctvGreen, 0);
 
@@ -513,12 +609,13 @@ function Zone8EquipPanel({ equip }: { equip: Zone8Equipment }) {
 
 interface DetailPanelProps {
   view: "overview" | "zone";
+  checkpoint: "tuas" | "woodlands";
   selectedZone: string | null;
   selectedEquipment: Zone8Equipment | null;
   onEnterZone: () => void;
 }
 
-export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone }: DetailPanelProps) {
+export function DetailPanel({ view, checkpoint, selectedZone, selectedEquipment, onEnterZone }: DetailPanelProps) {
   return (
     <div
       style={{
@@ -551,7 +648,11 @@ export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone
             letterSpacing: "0.12em",
           }}
         >
-          {view === "zone" ? "Zone 8 — Equipment" : "Detail Panel"}
+          {view === "zone"
+            ? "Zone 8 — Equipment"
+            : checkpoint === "woodlands"
+              ? "Woodlands — Overview"
+              : "Detail Panel"}
         </div>
       </div>
 
@@ -602,10 +703,10 @@ export function DetailPanel({ view, selectedZone, selectedEquipment, onEnterZone
               ))}
             </div>
           </div>
-        ) : selectedZone ? (
+        ) : checkpoint === "tuas" && selectedZone ? (
           <ZonePanel zoneId={selectedZone} onEnterZone={onEnterZone} />
         ) : (
-          <EmptyState />
+          <EmptyState checkpoint={checkpoint} />
         )}
       </div>
     </div>

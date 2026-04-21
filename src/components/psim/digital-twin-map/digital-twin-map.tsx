@@ -13,13 +13,15 @@ import { CctvPanel } from "@/components/psim/site-overview/cctv-panel";
 const BASE_PATH = "/ica-vsb-psim";
 
 // Zone hotspot positions as % of image container — matched to DALL-E isometric overview
-const ZONE_HOTSPOTS: Array<{
+interface ZoneHotspotDef {
   id: string;
   label: string;
   top: string;
   left: string;
   size: string;
-}> = [
+}
+
+const TUAS_ZONE_HOTSPOTS: ZoneHotspotDef[] = [
   { id: "4B", label: "Zone 4B", top: "25%", left: "18%", size: "11%" },
   { id: "5",  label: "Zone 5",  top: "35%", left: "35%", size: "11%" },
   { id: "5B", label: "Zone 5B", top: "22%", left: "42%", size: "10%" },
@@ -27,6 +29,20 @@ const ZONE_HOTSPOTS: Array<{
   { id: "7",  label: "Zone 7",  top: "30%", left: "62%", size: "10%" },
   { id: "8",  label: "Zone 8",  top: "42%", left: "75%", size: "12%" },
   { id: "9A", label: "Zone 9A", top: "60%", left: "48%", size: "11%" },
+];
+
+// Woodlands hotspots — eyeballed along the diagonal inspection-lane cluster
+// Complex runs lower-left to upper-right; Causeway is at top-left.
+// Generic names W1-W8 pending confirmation from Jackie on real zone naming.
+const WOODLANDS_ZONE_HOTSPOTS: ZoneHotspotDef[] = [
+  { id: "W1", label: "Zone W1", top: "72%", left: "22%", size: "9%" },
+  { id: "W2", label: "Zone W2", top: "63%", left: "33%", size: "9%" },
+  { id: "W3", label: "Zone W3", top: "56%", left: "42%", size: "9%" },
+  { id: "W4", label: "Zone W4", top: "50%", left: "52%", size: "9%" },
+  { id: "W5", label: "Zone W5", top: "45%", left: "62%", size: "9%" },
+  { id: "W6", label: "Zone W6", top: "38%", left: "72%", size: "9%" },
+  { id: "W7", label: "Zone W7", top: "32%", left: "82%", size: "9%" },
+  { id: "W8", label: "Zone W8", top: "28%", left: "92%", size: "9%" },
 ];
 
 // Zone 8 equipment positions on the zone image — matched to DALL-E close-up
@@ -46,6 +62,7 @@ const ZONE_8_EQUIPMENT = [
 // ─── STATE TYPE ───────────────────────────────────────────────────────────────
 
 type MapView = "overview" | "zone";
+type Checkpoint = "tuas" | "woodlands";
 
 interface MapState {
   view: MapView;
@@ -157,6 +174,7 @@ function TooltipZone({ message }: { message: string }) {
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 
 export function DigitalTwinMap() {
+  const [checkpoint, setCheckpoint] = useState<Checkpoint>("tuas");
   const [state, setState] = useState<MapState>({
     view: "overview",
     activeZone: null,
@@ -165,7 +183,20 @@ export function DigitalTwinMap() {
   const [cctvOpen, setCctvOpen] = useState(false);
   const [tooltip, setTooltip] = useState<string | null>(null);
 
+  function handleCheckpointChange(next: Checkpoint) {
+    if (next === checkpoint) return;
+    setCheckpoint(next);
+    setState({ view: "overview", activeZone: null, selectedEquipment: null });
+    setTooltip(null);
+  }
+
   function handleZoneClick(zoneId: string) {
+    if (checkpoint === "woodlands") {
+      setTooltip(`Zone ${zoneId} — Coming soon — drill-down available in v2`);
+      setState((s) => ({ ...s, activeZone: zoneId, selectedEquipment: null }));
+      setTimeout(() => setTooltip(null), 2500);
+      return;
+    }
     if (zoneId === "8") {
       setState({ view: "zone", activeZone: "8", selectedEquipment: null });
     } else {
@@ -241,7 +272,9 @@ export function DigitalTwinMap() {
             >
               {state.view === "zone"
                 ? "Zone 8 — Lower Entry"
-                : "Digital Twin — Tuas Checkpoint"}
+                : checkpoint === "woodlands"
+                  ? "Digital Twin — Woodlands Checkpoint"
+                  : "Digital Twin — Tuas Checkpoint"}
             </h1>
             <p
               style={{
@@ -253,12 +286,54 @@ export function DigitalTwinMap() {
             >
               {state.view === "zone"
                 ? "Click an equipment marker to inspect"
-                : "Click Zone 8 to explore — live demo zone"}
+                : checkpoint === "woodlands"
+                  ? "Woodlands drill-down coming in v2"
+                  : "Click Zone 8 to explore — live demo zone"}
             </p>
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {/* Checkpoint switcher — two-pill toggle */}
+          {state.view === "overview" && (
+            <div
+              style={{
+                display: "inline-flex",
+                padding: "3px",
+                borderRadius: "8px",
+                border: "1px solid #1a2a40",
+                background: "#070e1c",
+                gap: "2px",
+              }}
+            >
+              {(["tuas", "woodlands"] as const).map((cp) => {
+                const active = checkpoint === cp;
+                return (
+                  <button
+                    key={cp}
+                    onClick={() => handleCheckpointChange(cp)}
+                    style={{
+                      padding: "5px 12px",
+                      borderRadius: "5px",
+                      border: "none",
+                      background: active ? "#0d2040" : "transparent",
+                      color: active ? "#00ccff" : "#4a6a8a",
+                      fontFamily: "var(--font-mono), monospace",
+                      fontSize: "11px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      fontWeight: active ? 700 : 500,
+                      cursor: "pointer",
+                      transition: "all 150ms",
+                      boxShadow: active ? "0 0 0 1px rgba(0,200,255,0.25)" : "none",
+                    }}
+                  >
+                    {cp === "tuas" ? "Tuas" : "Woodlands"}
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {/* CCTV toggle */}
           <button
             onClick={() => setCctvOpen((v) => !v)}
@@ -354,20 +429,32 @@ export function DigitalTwinMap() {
               <>
                 {/* DALL-E digital twin overview */}
                 <MapImage
-                  src={`${BASE_PATH}/tuas-overview.png`}
-                  fallbackLabel="Tuas Checkpoint — Digital Twin Overview"
-                  alt="Tuas Checkpoint — digital twin overview"
+                  src={
+                    checkpoint === "woodlands"
+                      ? `${BASE_PATH}/woodlands-overview.png`
+                      : `${BASE_PATH}/tuas-overview2.png`
+                  }
+                  fallbackLabel={
+                    checkpoint === "woodlands"
+                      ? "Woodlands Checkpoint — Digital Twin Overview"
+                      : "Tuas Checkpoint — Digital Twin Overview"
+                  }
+                  alt={
+                    checkpoint === "woodlands"
+                      ? "Woodlands Checkpoint — digital twin overview"
+                      : "Tuas Checkpoint — digital twin overview"
+                  }
                   filtered={false}
                 />
 
                 {/* Zone hotspots — circular, matched to drawing zones */}
-                {ZONE_HOTSPOTS.map((zone) => (
+                {(checkpoint === "woodlands" ? WOODLANDS_ZONE_HOTSPOTS : TUAS_ZONE_HOTSPOTS).map((zone) => (
                   <ZoneHotspot
                     key={zone.id}
                     id={zone.id}
                     label={zone.label}
-                    isDemo={zone.id === "8"}
-                    equipmentCount={getZoneEquipmentCount(zone.id)}
+                    isDemo={checkpoint === "tuas" && zone.id === "8"}
+                    equipmentCount={checkpoint === "tuas" ? getZoneEquipmentCount(zone.id) : 0}
                     top={zone.top}
                     left={zone.left}
                     size={zone.size}
@@ -424,6 +511,7 @@ export function DigitalTwinMap() {
         {/* Detail panel */}
         <DetailPanel
           view={state.view}
+          checkpoint={checkpoint}
           selectedZone={state.activeZone}
           selectedEquipment={selectedZone8Equip}
           onEnterZone={() => {
