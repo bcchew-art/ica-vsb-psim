@@ -29,27 +29,27 @@ interface ZoneHotspotDef {
 }
 
 const TUAS_ZONE_HOTSPOTS: ZoneHotspotDef[] = [
-  { id: "4B", label: "Zone 4B", top: "25%", left: "18%", size: "11%" },
-  { id: "5",  label: "Zone 5",  top: "35%", left: "35%", size: "11%" },
+  { id: "4B", label: "Zone 4B", top: "30%", left: "24%", size: "11%" },
+  { id: "5",  label: "Zone 5",  top: "35%", left: "29%", size: "11%" },
   { id: "5B", label: "Zone 5B", top: "22%", left: "42%", size: "10%" },
-  { id: "6A", label: "Zone 6A", top: "45%", left: "52%", size: "11%" },
+  { id: "6A", label: "Zone 6A", top: "45%", left: "46%", size: "11%" },
   { id: "7",  label: "Zone 7",  top: "30%", left: "62%", size: "10%" },
   { id: "8",  label: "Zone 8",  top: "42%", left: "75%", size: "12%" },
-  { id: "9A", label: "Zone 9A", top: "60%", left: "48%", size: "11%" },
+  { id: "9A", label: "Zone 9A", top: "60%", left: "40%", size: "11%" },
 ];
 
 // Woodlands hotspots — eyeballed along the diagonal inspection-lane cluster
 // Complex runs lower-left to upper-right; Causeway is at top-left.
 // Generic names W1-W8 pending confirmation from Jackie on real zone naming.
 const WOODLANDS_ZONE_HOTSPOTS: ZoneHotspotDef[] = [
-  { id: "W1", label: "Zone W1", top: "72%", left: "22%", size: "9%" },
-  { id: "W2", label: "Zone W2", top: "63%", left: "33%", size: "9%" },
-  { id: "W3", label: "Zone W3", top: "56%", left: "42%", size: "9%" },
-  { id: "W4", label: "Zone W4", top: "50%", left: "52%", size: "9%" },
-  { id: "W5", label: "Zone W5", top: "45%", left: "62%", size: "9%" },
-  { id: "W6", label: "Zone W6", top: "38%", left: "72%", size: "9%" },
-  { id: "W7", label: "Zone W7", top: "32%", left: "82%", size: "9%" },
-  { id: "W8", label: "Zone W8", top: "28%", left: "92%", size: "9%" },
+  { id: "W1", label: "Zone W1", top: "66%", left: "22%", size: "9%" },
+  { id: "W2", label: "Zone W2", top: "57%", left: "33%", size: "9%" },
+  { id: "W3", label: "Zone W3", top: "50%", left: "42%", size: "9%" },
+  { id: "W4", label: "Zone W4", top: "44%", left: "52%", size: "9%" },
+  { id: "W5", label: "Zone W5", top: "39%", left: "62%", size: "9%" },
+  { id: "W6", label: "Zone W6", top: "32%", left: "72%", size: "9%" },
+  { id: "W7", label: "Zone W7", top: "26%", left: "82%", size: "9%" },
+  { id: "W8", label: "Zone W8", top: "22%", left: "92%", size: "9%" },
 ];
 
 // Zone 8 equipment positions on the zone image — matched to DALL-E close-up
