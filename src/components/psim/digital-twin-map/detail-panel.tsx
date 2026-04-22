@@ -196,7 +196,9 @@ function EmptyState({ checkpoint }: { checkpoint: "tuas" | "woodlands" }) {
 
   // Tuas summary (existing)
   const locs = tuasCheckpoint.locations;
-  const totalCctv = locs.reduce((s, l) => s + l.cctvPink + l.cctvGreen, 0);
+  // BOQ R9: Tuas has 71 CCTV cameras (45 + 26). Hardcoded to match source-of-truth
+  // rather than per-location cctvPink+cctvGreen rollup (which is illustrative only).
+  const totalCctv = 71;
 
   const typeCounts: Record<string, number> = {};
   for (const loc of locs) {
